@@ -36,6 +36,9 @@ using namespace std;
 glm::mat4 projectionMatrix; // Store the projection matrix
 glm::mat4 viewMatrix; // Store the view matrix
 glm::mat4 modelMatrix; // Store the model matrix
+int projectionMatrixLocation;
+int viewMatrixLocation;
+int modelMatrixLocation;
 
 // The handle to the window object
 GLFWwindow*         window = NULL;
@@ -190,9 +193,9 @@ void Init(void)
 	//-----------------------------------------------------------------------------------------------------------------------
 	// Shader source locations
 	// TODO: Get the location of your gpu (fragment shader code and vertex shader code) variables here. 
-	int projectionMatrixLocation = glGetUniformLocation(program, "projectionMatrix"); // Get the location of our projection matrix in the shader
-	int viewMatrixLocation = glGetUniformLocation(program, "viewMatrix"); // Get the location of our view matrix in the shader
-	int modelMatrixLocation = glGetUniformLocation(program, "modelMatrix"); // Get the location of our model matrix in the shader
+	projectionMatrixLocation = glGetUniformLocation(program, "projectionMatrix"); // Get the location of our projection matrix in the shader
+	viewMatrixLocation = glGetUniformLocation(program, "viewMatrix"); // Get the location of our view matrix in the shader
+	modelMatrixLocation = glGetUniformLocation(program, "modelMatrix"); // Get the location of our model matrix in the shader
 
 
 
@@ -255,7 +258,24 @@ void Draw(void)
 		//-----------------------------------------------------------------------------------------------------------------------
 		// Update all variables
 		// TODO: Send all varibales, it content to the gpu
+		// Enable the shader program
+		glUseProgram(program);
 
+		/* Creating rotation matrices */
+		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &rotated_view[0][0]); // send the view matrix to our shader
+		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]); // Send our projection matrix to the shader
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &modelMatrix[0][0]); // Send our model matrix to the shader
+
+		// Bind the buffer and switch it to an active buffer
+		glBindVertexArray(vaoID[0]);
+
+		// Draw the triangles
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 24);
+		// Unbind our Vertex Array Object
+		glBindVertexArray(0);
+
+		// Unbind the shader program
+		glUseProgram(0);
 
 
 
