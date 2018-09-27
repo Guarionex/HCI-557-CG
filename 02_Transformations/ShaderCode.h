@@ -20,9 +20,9 @@ namespace cs557
 	static const string vs_string_simple_shader_410 =
 		"#version 410 core                                                 \n"
 		"                                                                   \n"
-		"uniform [type] [name];								                \n"
-		"uniform [type] [name]												 \n"
-		"uniform [type] [name]												\n"
+		"uniform mat4 projectionMatrix;								                \n"
+		"uniform mat4 viewMatrix;												 \n"
+		"uniform mat4 modelMatrix;												\n"
 		"in vec3 in_Position;                                               \n"
 		"in vec3 in_Color;                                                  \n"
 		"out vec3 pass_Color;                                               \n"

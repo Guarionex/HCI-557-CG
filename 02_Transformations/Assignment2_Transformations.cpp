@@ -33,6 +33,10 @@ using namespace std;
 // 
 //	Some global variables to keep track of 
 
+glm::mat4 projectionMatrix; // Store the projection matrix
+glm::mat4 viewMatrix; // Store the view matrix
+glm::mat4 modelMatrix; // Store the model matrix
+
 // The handle to the window object
 GLFWwindow*         window = NULL;
 
