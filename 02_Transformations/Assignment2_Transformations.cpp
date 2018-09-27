@@ -179,7 +179,9 @@ void Init(void)
 	//-----------------------------------------------------------------------------------------------------------------------
 	// Projection transformations
 	// TODO: ADD TRANSFORMATIONS HERE
-
+	projectionMatrix = glm::perspective(1.57f, (float)800 / (float)600, 0.1f, 100.f);
+	viewMatrix = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.5f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
 
 
@@ -188,7 +190,9 @@ void Init(void)
 	//-----------------------------------------------------------------------------------------------------------------------
 	// Shader source locations
 	// TODO: Get the location of your gpu (fragment shader code and vertex shader code) variables here. 
-
+	int projectionMatrixLocation = glGetUniformLocation(program, "projectionMatrix"); // Get the location of our projection matrix in the shader
+	int viewMatrixLocation = glGetUniformLocation(program, "viewMatrix"); // Get the location of our view matrix in the shader
+	int modelMatrixLocation = glGetUniformLocation(program, "modelMatrix"); // Get the location of our model matrix in the shader
 
 
 
@@ -196,7 +200,9 @@ void Init(void)
 	//-----------------------------------------------------------------------------------------------------------------------
 	// Update all variables
 	// TODO: Send all varibales, it content to the gpu
-
+	glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]); // Send our projection matrix to the shader
+	glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &viewMatrix[0][0]); // Send our view matrix to the shader
+	glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &modelMatrix[0][0]); // Send our model matrix to the shader
 
 
 
