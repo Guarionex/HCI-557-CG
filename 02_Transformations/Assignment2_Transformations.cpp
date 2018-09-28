@@ -246,10 +246,21 @@ void Draw(void)
 		// update the camera values. 
 		// Note that this line changes the view matrix.
 		glm::mat4 rotated_view = viewMatrix * cs557::GetTrackball().getRotationMatrix();
-		mat4 rotatedModel = glm::rotate(modelMatrix, glm::radians(45.0f), vec3(0, 1, 0));
-		mat4 translatedModel = glm::translate(modelMatrix, vec3(0.0f, 0.0f, 0.5f));
-		mat4 firstTransform = translatedModel * rotatedModel;
+		
+		//First transform
+		mat4 translatedModel = translate(modelMatrix, vec3(0.0f, 0.0f, 0.5f));
+		mat4 firstTransform = glm::rotate(translatedModel, radians(45.0f), vec3(0, 1, 0));
+		
+		//Quaternion Transform
+		quat quatRotation(cos(radians(45.0f / 2.0f)), 0, sin(radians(45.0f / 2.0f)), 0);
+		mat4 secondTransform = translatedModel * toMat4(quatRotation);
 
+		//Manual Transformation
+		GLfloat manualTranslation[16] = {cos(radians(45.0f)), 0.0f, -sin(radians(45.0f)), 0.0f,
+										 0.0f, 1.0f, 0.0f, 0.0f,
+										 sin(radians(45.0f)), 0.0f, cos(radians(45.0f)), 0.0f,
+										 0.0f, 0.0f, 0.5f, 1.0f};
+		mat4 thirdTransform = modelMatrix * make_mat4(manualTranslation);
 
 		// This draws a coordinate system
 		coordinateSystem.draw(projectionMatrix, rotated_view, modelMatrix);
@@ -267,8 +278,17 @@ void Draw(void)
 		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &rotated_view[0][0]);
 		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
 
+		//Original model matrix
+		//glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &modelMatrix[0][0]);
+
 		//Model rotated 45 degrees on Y-axis and moved 0.5 along Z-axis
-		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &firstTransform[0][0]);
+		//glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &firstTransform[0][0]);
+
+		//Model rotated 45 degrees on Y-axis using quaternion and moved 0.5 along Z-axis
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &secondTransform[0][0]);
+
+		//Model rotated 45 degrees on Y-axis and moved 0.5 along Z-axis with manual matrix
+		//glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &thirdTransform[0][0]);
 
 		// Bind the buffer and switch it to an active buffer
 		glBindVertexArray(vaoID[0]);
