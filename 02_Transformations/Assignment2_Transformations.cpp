@@ -246,7 +246,9 @@ void Draw(void)
 		// update the camera values. 
 		// Note that this line changes the view matrix.
 		glm::mat4 rotated_view = viewMatrix * cs557::GetTrackball().getRotationMatrix();
-
+		mat4 rotatedModel = glm::rotate(modelMatrix, glm::radians(45.0f), vec3(0, 1, 0));
+		mat4 translatedModel = glm::translate(modelMatrix, vec3(0.0f, 0.0f, 0.5f));
+		mat4 firstTransform = translatedModel * rotatedModel;
 
 
 		// This draws a coordinate system
@@ -262,9 +264,11 @@ void Draw(void)
 		glUseProgram(program);
 
 		/* Creating rotation matrices */
-		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &rotated_view[0][0]); // send the view matrix to our shader
-		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]); // Send our projection matrix to the shader
-		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &modelMatrix[0][0]); // Send our model matrix to the shader
+		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &rotated_view[0][0]);
+		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
+
+		//Model rotated 45 degrees on Y-axis and moved 0.5 along Z-axis
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &firstTransform[0][0]);
 
 		// Bind the buffer and switch it to an active buffer
 		glBindVertexArray(vaoID[0]);
