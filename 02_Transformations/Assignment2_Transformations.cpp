@@ -182,9 +182,9 @@ void Init(void)
 	//-----------------------------------------------------------------------------------------------------------------------
 	// Projection transformations
 	// TODO: ADD TRANSFORMATIONS HERE
-	projectionMatrix = glm::perspective(1.57f, (float)800 / (float)600, 0.1f, 100.f);
-	viewMatrix = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.5f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	projectionMatrix = perspective(1.57f, 800.0f / 600.0f, 0.1f, 100.f);
+	viewMatrix = lookAt(vec3(0.0f, 0.0f, 1.5f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+	modelMatrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, 0.0f));
 
 
 
@@ -193,9 +193,9 @@ void Init(void)
 	//-----------------------------------------------------------------------------------------------------------------------
 	// Shader source locations
 	// TODO: Get the location of your gpu (fragment shader code and vertex shader code) variables here. 
-	projectionMatrixLocation = glGetUniformLocation(program, "projectionMatrix"); // Get the location of our projection matrix in the shader
-	viewMatrixLocation = glGetUniformLocation(program, "viewMatrix"); // Get the location of our view matrix in the shader
-	modelMatrixLocation = glGetUniformLocation(program, "modelMatrix"); // Get the location of our model matrix in the shader
+	projectionMatrixLocation = glGetUniformLocation(program, "projectionMatrix");
+	viewMatrixLocation = glGetUniformLocation(program, "viewMatrix");
+	modelMatrixLocation = glGetUniformLocation(program, "modelMatrix");
 
 
 
@@ -203,9 +203,9 @@ void Init(void)
 	//-----------------------------------------------------------------------------------------------------------------------
 	// Update all variables
 	// TODO: Send all varibales, it content to the gpu
-	glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]); // Send our projection matrix to the shader
-	glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &viewMatrix[0][0]); // Send our view matrix to the shader
-	glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &modelMatrix[0][0]); // Send our model matrix to the shader
+	glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
+	glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &viewMatrix[0][0]);
+	glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &modelMatrix[0][0]);
 
 
 
@@ -271,10 +271,8 @@ void Draw(void)
 		//-----------------------------------------------------------------------------------------------------------------------
 		// Update all variables
 		// TODO: Send all varibales, it content to the gpu
-		// Enable the shader program
 		glUseProgram(program);
 
-		/* Creating rotation matrices */
 		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &rotated_view[0][0]);
 		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
 
@@ -285,23 +283,17 @@ void Draw(void)
 		//glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &firstTransform[0][0]);
 
 		//Model rotated 45 degrees on Y-axis using quaternion and moved 0.5 along Z-axis
-		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &secondTransform[0][0]);
+		//glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &secondTransform[0][0]);
 
 		//Model rotated 45 degrees on Y-axis and moved 0.5 along Z-axis with manual matrix
-		//glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &thirdTransform[0][0]);
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, &thirdTransform[0][0]);
 
-		// Bind the buffer and switch it to an active buffer
 		glBindVertexArray(vaoID[0]);
 
-		// Draw the triangles
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 24);
-		// Unbind our Vertex Array Object
 		glBindVertexArray(0);
 
-		// Unbind the shader program
 		glUseProgram(0);
-
-
 
 		//// This renders the objects
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
