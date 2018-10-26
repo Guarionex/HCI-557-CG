@@ -65,6 +65,7 @@ cs557::Sphere sphere4;
 // Light and Material for the spheres
 // Feel free to user more or different shader programs if you need to .
 int per_vertex_light_program = -1;
+int directional_light_program = -1;
 
 
 
@@ -91,7 +92,7 @@ void CreateSphere1(int shader_program_index)
     // 2nd: Number of segments
     // 3rd: Number of rows
     // 4th: The shader program index
-    sphere1.create(1.0, 20, 20, shader_program_index);
+    sphere1.create(1.0, 100, 100, shader_program_index);
     
    //********************************************************************************
     // TODO:
@@ -100,34 +101,37 @@ void CreateSphere1(int shader_program_index)
 
     // Your turn
 	vec3 diffuseMaterial = vec3(1.0, 0.0, 0.0);
-	vec3 ambientMaterial = vec3(0.9, 0.0, 0.0);
-	vec3 specularMaterial = vec3(0.0, 0.0, 0.0);
-	float shininess = 5.0;
+	vec3 ambientMaterial = vec3(1.0, 0.0, 0.0);
+	vec3 specularMaterial = vec3(1.0, 1.0, 1.0);
+	float shininess = 150.0;
 
-	int diffuseColorPos = glGetUniformLocation(shader_program_index, "diffusecolor");
-	int ambientColorPos = glGetUniformLocation(shader_program_index, "ambientcolor");
-	int specularColorPos = glGetUniformLocation(shader_program_index, "specularColor");
-	int shininessPos = glGetUniformLocation(shader_program_index, "speculuar_coeff");
+	int diffuseColorPos = glGetUniformLocation(shader_program_index, "diffuse_color");
+	int ambientColorPos = glGetUniformLocation(shader_program_index, "ambient_color");
+	int specularColorPos = glGetUniformLocation(shader_program_index, "specular_color");
+	int shininessPos = glGetUniformLocation(shader_program_index, "shininess");
 
 	glUniform3fv(diffuseColorPos, 1, &diffuseMaterial[0]);
 	glUniform3fv(ambientColorPos, 1, &ambientMaterial[0]);
 	glUniform3fv(specularColorPos, 1, &specularMaterial[0]);
 	glUniform1f(shininessPos, shininess);
 
-	vec3 lightPos = vec3(-20.0, 20.0, -20.0);
-	float diffuseIntensity = 1.0;
-	float ambientIntensity = 1.0;
-	float specularIntensity = 1.0;
+	vec4 lightPos = vec4(-4.0, 0.0, -4.5, 1.0);
+	float diffuseIntensity = 4.0;
+	float ambientIntensity = 0.1;
+	float specularIntensity = 10.0;
+	float attenuationCoeff = 0.02;
 
-	int lightPosId = glGetUniformLocation(shader_program_index, "locationLight");
-	int diffuseIntesityId = glGetUniformLocation(shader_program_index, "diffuseIntensity");
-	int ambientIntesityId = glGetUniformLocation(shader_program_index, "ambientIntensity");
+	int lightPosId = glGetUniformLocation(shader_program_index, "light_position");
+	int diffuseIntesityId = glGetUniformLocation(shader_program_index, "diffuse_intensity");
+	int ambientIntesityId = glGetUniformLocation(shader_program_index, "ambient_intensity");
 	int specularIntesityId = glGetUniformLocation(shader_program_index, "specular_intensity");
+	int attenuationCoeffId = glGetUniformLocation(shader_program_index, "attenuation_Coefficient");
 
-	glUniform3fv(lightPosId, 1, &lightPos[0]);
+	glUniform4fv(lightPosId, 1, &lightPos[0]);
 	glUniform1f(diffuseIntesityId, diffuseIntensity);
 	glUniform1f(ambientIntesityId, ambientIntensity);
 	glUniform1f(specularIntesityId, specularIntensity);
+	glUniform1f(attenuationCoeffId, attenuationCoeff);
 
     //********************************************************************************
 
@@ -276,13 +280,15 @@ void Init(void)
     // NOTE: BE AWARE OF THE FILE LOCATION AND THE STARTING POINT OF YOUR PROGRAM.
     // THE RELATIVE PATH ../homework_shader.vs/fs  EXPECTS THE SHADER TO BE ONE FOLDER UP IN THE HIERARCHY STARTING IN YOUR EXECUTABLE
     // FOLDER.
+
+	directional_light_program = LoadAndCreateShaderProgram("Shaders/DirectionalLight.vs", "Shaders/DirectionalLight.fs");
     per_vertex_light_program = LoadAndCreateShaderProgram("Shaders/homework_shader.vs", "Shaders/homework_shader.fs");
 
 
     //-----------------------------------------------------------------------------------------------------------------------
     // Create models
 
-    CreateSphere1(per_vertex_light_program);
+    CreateSphere1(directional_light_program);
     CreateSphere2(per_vertex_light_program);
     CreateSphere3(per_vertex_light_program);
     CreateSphere4(per_vertex_light_program);
@@ -327,8 +333,8 @@ void Draw(void)
 
         // draw the spheres
         sphere1.draw(projectionMatrix, rotated_view, modelMatrixSphere1);
-        /*sphere2.draw(projectionMatrix, rotated_view, modelMatrixSphere2);
-        sphere3.draw(projectionMatrix, rotated_view, modelMatrixSphere3);
+		/*sphere2.draw(projectionMatrix, rotated_view, modelMatrixSphere2);
+		sphere3.draw(projectionMatrix, rotated_view, modelMatrixSphere3);
         sphere4.draw(projectionMatrix, rotated_view, modelMatrixSphere4);*/
 
         //----------------------------------------------------------------------------------------------------------------------------
