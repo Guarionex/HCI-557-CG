@@ -65,7 +65,8 @@ cs557::Sphere sphere4;
 // Light and Material for the spheres
 // Feel free to user more or different shader programs if you need to .
 int per_vertex_light_program = -1;
-int directional_light_program = -1;
+int red_directional_light_program = -1;
+int blue_directional_light_program = -1;
 
 
 
@@ -166,7 +167,38 @@ void CreateSphere2(int shader_program_index)
     // and copy the values to your shader program. 
 
     // Your turn
+	vec3 diffuseMaterial = vec3(0.0, 0.0, 1.0);
+	vec3 ambientMaterial = vec3(0.0, 0.0, 1.0);
+	vec3 specularMaterial = vec3(1.0, 1.0, 1.0);
+	float shininess = 150.0;
 
+	int diffuseColorPos = glGetUniformLocation(shader_program_index, "diffuse_color");
+	int ambientColorPos = glGetUniformLocation(shader_program_index, "ambient_color");
+	int specularColorPos = glGetUniformLocation(shader_program_index, "specular_color");
+	int shininessPos = glGetUniformLocation(shader_program_index, "shininess");
+
+	glUniform3fv(diffuseColorPos, 1, &diffuseMaterial[0]);
+	glUniform3fv(ambientColorPos, 1, &ambientMaterial[0]);
+	glUniform3fv(specularColorPos, 1, &specularMaterial[0]);
+	glUniform1f(shininessPos, shininess);
+
+	vec4 lightPos = vec4(-1.5, 0.0, -2.0, 0.0);
+	float diffuseIntensity = 1.0;
+	float ambientIntensity = 0.0;
+	float specularIntensity = 0.0;
+	float attenuationCoeff = 0.02;
+
+	int lightPosId = glGetUniformLocation(shader_program_index, "light_position");
+	int diffuseIntesityId = glGetUniformLocation(shader_program_index, "diffuse_intensity");
+	int ambientIntesityId = glGetUniformLocation(shader_program_index, "ambient_intensity");
+	int specularIntesityId = glGetUniformLocation(shader_program_index, "specular_intensity");
+	int attenuationCoeffId = glGetUniformLocation(shader_program_index, "attenuation_Coefficient");
+
+	glUniform4fv(lightPosId, 1, &lightPos[0]);
+	glUniform1f(diffuseIntesityId, diffuseIntensity);
+	glUniform1f(ambientIntesityId, ambientIntensity);
+	glUniform1f(specularIntesityId, specularIntensity);
+	glUniform1f(attenuationCoeffId, attenuationCoeff);
 
     //********************************************************************************
 
@@ -281,15 +313,16 @@ void Init(void)
     // THE RELATIVE PATH ../homework_shader.vs/fs  EXPECTS THE SHADER TO BE ONE FOLDER UP IN THE HIERARCHY STARTING IN YOUR EXECUTABLE
     // FOLDER.
 
-	directional_light_program = LoadAndCreateShaderProgram("Shaders/DirectionalLight.vs", "Shaders/DirectionalLight.fs");
+	red_directional_light_program = LoadAndCreateShaderProgram("Shaders/DirectionalLight.vs", "Shaders/DirectionalLight.fs");
+	blue_directional_light_program = LoadAndCreateShaderProgram("Shaders/DirectionalLight.vs", "Shaders/DirectionalLight.fs");
     per_vertex_light_program = LoadAndCreateShaderProgram("Shaders/homework_shader.vs", "Shaders/homework_shader.fs");
 
 
     //-----------------------------------------------------------------------------------------------------------------------
     // Create models
 
-    CreateSphere1(directional_light_program);
-    CreateSphere2(per_vertex_light_program);
+    CreateSphere1(red_directional_light_program);
+    CreateSphere2(blue_directional_light_program);
     CreateSphere3(per_vertex_light_program);
     CreateSphere4(per_vertex_light_program);
 
@@ -333,8 +366,8 @@ void Draw(void)
 
         // draw the spheres
         sphere1.draw(projectionMatrix, rotated_view, modelMatrixSphere1);
-		/*sphere2.draw(projectionMatrix, rotated_view, modelMatrixSphere2);
-		sphere3.draw(projectionMatrix, rotated_view, modelMatrixSphere3);
+		sphere2.draw(projectionMatrix, rotated_view, modelMatrixSphere2);
+		/*sphere3.draw(projectionMatrix, rotated_view, modelMatrixSphere3);
         sphere4.draw(projectionMatrix, rotated_view, modelMatrixSphere4);*/
 
         //----------------------------------------------------------------------------------------------------------------------------
