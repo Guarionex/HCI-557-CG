@@ -68,6 +68,7 @@ int per_vertex_light_program = -1;
 int red_directional_light_program = -1;
 int blue_directional_light_program = -1;
 int green_spotlight_program = -1;
+int yellow_spotlight_program = -1;
 
 
 
@@ -299,7 +300,7 @@ void CreateSphere4(int shader_program_index)
     // 2nd: Number of segments
     // 3rd: Number of rows
     // 4th: The shader program index
-    sphere4.create(1.0, 20, 20, shader_program_index);
+    sphere4.create(1.0, 500, 500, shader_program_index);
     
     //********************************************************************************
     // TODO:
@@ -307,7 +308,62 @@ void CreateSphere4(int shader_program_index)
     // and copy the values to your shader program. 
 
     // Your turn
+	vec3 diffuseMaterial = vec3(0.5, 0.5, 0.05);
+	vec3 ambientMaterial = vec3(0.5, 0.5, 0.05);
+	vec3 specularMaterial = vec3(1.0, 1.0, 1.0);
+	float shininess = 150.0;
 
+	int diffuseColorPos = glGetUniformLocation(shader_program_index, "diffuse_color");
+	int ambientColorPos = glGetUniformLocation(shader_program_index, "ambient_color");
+	int specularColorPos = glGetUniformLocation(shader_program_index, "specular_color");
+	int shininessPos = glGetUniformLocation(shader_program_index, "shininess");
+
+	glUniform3fv(diffuseColorPos, 1, &diffuseMaterial[0]);
+	glUniform3fv(ambientColorPos, 1, &ambientMaterial[0]);
+	glUniform3fv(specularColorPos, 1, &specularMaterial[0]);
+	glUniform1f(shininessPos, shininess);
+
+	vec4 lightPosSpotlight = vec4(-4.5, 0.0, -4.5, 1.0);
+	float diffuseIntensitySpotlight = 15.0;
+	float ambientIntensitySpotlight = 0.3;
+	float specularIntensitySpotlight = 5.0;
+	float attenuationCoeffSpotlight = 0.02;
+	float coneAngle = 13.0;
+	vec3 coneDirection = vec3(0.25, 0.3, 1.0);
+
+	int lightPosSpotlightId = glGetUniformLocation(shader_program_index, "light_position_spotlight");
+	int diffuseIntesitySpotlightId = glGetUniformLocation(shader_program_index, "diffuse_intensity_spotlight");
+	int ambientIntesitySpotlightId = glGetUniformLocation(shader_program_index, "ambient_intensity_spotlight");
+	int specularIntesitySpotlightId = glGetUniformLocation(shader_program_index, "specular_intensity_spotlight");
+	int attenuationCoeffSpotlightId = glGetUniformLocation(shader_program_index, "attenuation_Coefficient_spotlight");
+	int coneAngleId = glGetUniformLocation(shader_program_index, "cone_angle");
+	int coneDirectionId = glGetUniformLocation(shader_program_index, "cone_direction");
+
+	glUniform4fv(lightPosSpotlightId, 1, &lightPosSpotlight[0]);
+	glUniform1f(diffuseIntesitySpotlightId, diffuseIntensitySpotlight);
+	glUniform1f(ambientIntesitySpotlightId, ambientIntensitySpotlight);
+	glUniform1f(specularIntesitySpotlightId, specularIntensitySpotlight);
+	glUniform1f(attenuationCoeffSpotlightId, attenuationCoeffSpotlight);
+	glUniform1f(coneAngleId, coneAngle);
+	glUniform3fv(coneDirectionId, 1, &coneDirection[0]);
+
+	vec4 lightPosDirectional = vec4(4.0, -4.0, -5.0, 1.0);
+	float diffuseIntensityDirectional = 10.0;
+	float ambientIntensityDirectional = 0.0;
+	float specularIntensityDirectional = 1.5;
+	float attenuationCoeffDirectional = 0.02;
+
+	int lightPosDirectionalId = glGetUniformLocation(shader_program_index, "light_position_directional");
+	int diffuseIntesityDirectionalId = glGetUniformLocation(shader_program_index, "diffuse_intensity_directional");
+	int ambientIntesityDirectionalId = glGetUniformLocation(shader_program_index, "ambient_intensity_directional");
+	int specularIntesityDirectionalId = glGetUniformLocation(shader_program_index, "specular_intensity_directional");
+	int attenuationCoeffDirectionalId = glGetUniformLocation(shader_program_index, "attenuation_Coefficient_directional");
+
+	glUniform4fv(lightPosDirectionalId, 1, &lightPosDirectional[0]);
+	glUniform1f(diffuseIntesityDirectionalId, diffuseIntensityDirectional);
+	glUniform1f(ambientIntesityDirectionalId, ambientIntensityDirectional);
+	glUniform1f(specularIntesityDirectionalId, specularIntensityDirectional);
+	glUniform1f(attenuationCoeffDirectionalId, attenuationCoeffDirectional);
 
     //********************************************************************************
 
@@ -354,6 +410,7 @@ void Init(void)
 	red_directional_light_program = LoadAndCreateShaderProgram("Shaders/DirectionalLight.vs", "Shaders/DirectionalLight.fs");
 	blue_directional_light_program = LoadAndCreateShaderProgram("Shaders/DirectionalLight.vs", "Shaders/DirectionalLight.fs");
 	green_spotlight_program = LoadAndCreateShaderProgram("Shaders/Spotlight.vs", "Shaders/Spotlight.fs");
+	yellow_spotlight_program = LoadAndCreateShaderProgram("Shaders/DirectionalSpotlightMix.vs", "Shaders/DirectionalSpotlightMix.fs");
     per_vertex_light_program = LoadAndCreateShaderProgram("Shaders/homework_shader.vs", "Shaders/homework_shader.fs");
 
 
@@ -363,7 +420,7 @@ void Init(void)
     CreateSphere1(red_directional_light_program);
     CreateSphere2(blue_directional_light_program);
     CreateSphere3(green_spotlight_program);
-    CreateSphere4(per_vertex_light_program);
+    CreateSphere4(yellow_spotlight_program);
 
 }
 
@@ -407,7 +464,7 @@ void Draw(void)
         sphere1.draw(projectionMatrix, rotated_view, modelMatrixSphere1);
 		sphere2.draw(projectionMatrix, rotated_view, modelMatrixSphere2);
 		sphere3.draw(projectionMatrix, rotated_view, modelMatrixSphere3);
-		/*sphere4.draw(projectionMatrix, rotated_view, modelMatrixSphere4);*/
+		sphere4.draw(projectionMatrix, rotated_view, modelMatrixSphere4);
 
         //----------------------------------------------------------------------------------------------------------------------------
 
