@@ -1,6 +1,7 @@
 #include "BMPLoader.h"
 
 #ifdef _WIN32
+#include <experimental\filesystem>
 #else
 #include <sys/stat.h>
 #endif
