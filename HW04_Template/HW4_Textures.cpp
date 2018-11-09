@@ -133,7 +133,7 @@ void Init(void)
     // Note that you have to modify the default texture program since it only 
     // renders a single texture
     // Load the shader program
-    texture_program = cs557::LoadAndCreateShaderProgram("../texture_program.vs", "../texture_program.fs");
+    texture_program = cs557::LoadAndCreateShaderProgram("texture_program.vs", "texture_program.fs");
 
     
 
@@ -148,9 +148,15 @@ void Init(void)
     // TODO
     //
     // 1. Load the textures
+	glUseProgram(texture_program);
+	unsigned int texture_id = -1;
+	LoadAndCreateTexture2D("Texture/ColorGradient.bmp", &texture_id);
     // 2. Bind them to texture targets and texture units.
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture_id);
     // 3. Assign the texture unit to a glsl uniform sampler 2D variable. 
-
+	int texture_location = glGetUniformLocation(texture_program, "tex");
+	glUniform1i(texture_location, 0);
 
 
 
