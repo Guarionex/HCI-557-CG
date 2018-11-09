@@ -48,6 +48,8 @@ namespace cs557
     */
     bool LoadAndCreateTexture2D(string file_and_path, unsigned int* dst_texture_id);
 
+	//bool LoadAndCreateTexture2D(string file_and_path, string file_and_path2, unsigned int* dst_texture_id, unsigned int* dst_texture_id2);
+
 
 
      /*

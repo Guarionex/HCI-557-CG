@@ -99,7 +99,7 @@ void cs557::Plane::create(float width, float height, unsigned int shader_program
 
 	int pos_location = glGetAttribLocation(program, "in_Position");
 	int normal_location = glGetAttribLocation(program, "in_Normal");
-	int texture_location = glGetAttribLocation(program, "in_Texture");
+	int texture_location = glGetAttribLocation(program, "in_TexCoord");
 
 
 	// create a vertex buffer object
@@ -108,14 +108,14 @@ void cs557::Plane::create(float width, float height, unsigned int shader_program
 
 
 	// Find the id's of the related variable name in your shader code. 
-	projMatrixLocation = glGetUniformLocation(program, "projectionMatrix"); // Get the location of our projection matrix in the shader
-	viewMatrixLocation = glGetUniformLocation(program, "viewMatrix"); // Get the location of our view matrix in the shader
-	modelMatrixLocation = glGetUniformLocation(program, "modelMatrix"); // Get the location of our model matrix in the shader
+	projMatrixLocation = glGetUniformLocation(program, "projectionMatrixBox"); // Get the location of our projection matrix in the shader
+	viewMatrixLocation = glGetUniformLocation(program, "viewMatrixBox"); // Get the location of our view matrix in the shader
+	modelMatrixLocation = glGetUniformLocation(program, "modelMatrixBox"); // Get the location of our model matrix in the shader
 
 	
 
 	glBindAttribLocation(program, pos_location, "in_Position");
-	glBindAttribLocation(program, texture_location, "in_Texture");
+	glBindAttribLocation(program, texture_location, "in_TexCoord");
 	glBindAttribLocation(program, normal_location, "in_Normal");
 
 	glUseProgram(0);

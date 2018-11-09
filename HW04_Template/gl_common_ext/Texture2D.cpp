@@ -93,6 +93,55 @@ bool cs557::LoadAndCreateTexture2D(string file_and_path, unsigned int* dst_textu
     return true;
 }
 
+bool LoadAndCreateTexture2D(string file_and_path, string file_and_path2, unsigned int* dst_texture_id, unsigned int* dst_texture_id2)
+{
+	unsigned char * g_data = NULL;
+	int width = -1;
+	int height = -1;
+	int channels = -1;
+
+	unsigned char * g_data2 = NULL;
+	int width2 = -1;
+	int height2 = -1;
+	int channels2 = -1;
+
+
+	// Load the file
+	bool ret = cs557::LoadBMPFromFile(file_and_path, &width, &height, &channels, &g_data);
+	bool ret2 = cs557::LoadBMPFromFile(file_and_path2, &width2, &height2, &channels2, &g_data2);
+
+	if (!ret)
+	{
+		std::cout << "[ERROR] - Did not load bmp file: " << file_and_path << "." << std::endl;
+		return false;
+	}
+
+	if (!ret2)
+	{
+		std::cout << "[ERROR] - Did not load bmp file: " << file_and_path2 << "." << std::endl;
+		return false;
+	}
+
+	// Create the texture
+	ret = cs557::CreateTexture2D(width, height, channels, g_data, dst_texture_id);
+	ret2 = cs557::CreateTexture2D(width2, height2, channels2, g_data2, dst_texture_id2);
+
+
+	if (!ret)
+	{
+		std::cout << "[ERROR] - Did not create a texture for file: " << file_and_path << "." << std::endl;
+		return false;
+	}
+
+	if (!ret2)
+	{
+		std::cout << "[ERROR] - Did not create a texture for file: " << file_and_path2 << "." << std::endl;
+		return false;
+	}
+
+	return true;
+}
+
 
 
     /*
