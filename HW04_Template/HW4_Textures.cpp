@@ -150,7 +150,7 @@ void Init(void)
     // 1. Load the textures
 	glUseProgram(texture_program);
 	unsigned int texture_id = -1;
-	LoadAndCreateTexture2D("Texture/ColorGradient.bmp", &texture_id);
+	LoadAndCreateTexture2D("Texture/Ozzy3.bmp", &texture_id);
     // 2. Bind them to texture targets and texture units.
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture_id);
