@@ -217,7 +217,7 @@ void Init(void)
 	unsigned int texture_id3 = -1;
 	//LoadAndCreateTexture2D("Texture/Ozzy3.bmp", &texture_id);
 	//LoadAndCreateTexture2D("Texture/ColorGradient.bmp", &texture_id2);
-	MultiLoadAndCreateTextures("Texture/ColorGradient.bmp", "Texture/LakeNightLandscapeSquared.bmp", "Texture/Ozzy3.bmp", &texture_id, &texture_id2, &texture_id3);
+	MultiLoadAndCreateTextures("Texture/ColorGradient.bmp", "Texture/LakeNightLandscapeSquared.bmp", "Texture/Ozzy.bmp", &texture_id, &texture_id2, &texture_id3);
     // 2. Bind them to texture targets and texture units.
 	//glActiveTexture(GL_TEXTURE0);
 	//glActiveTexture(GL_TEXTURE1);
@@ -232,6 +232,7 @@ void Init(void)
 	glUniform1i(texture_location2, 1);
 	glUniform1i(texture_location3, 2);
 	glUniform1i(blend_mode, 5);
+	//glUniform1i(blend_mode, 4);
 
 	
 
