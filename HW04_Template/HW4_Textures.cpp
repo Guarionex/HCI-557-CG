@@ -66,8 +66,8 @@ cs557::Plane plane0;
 GLfloat clear_color[] = {0.6f, 0.7f, 1.0f, 1.0f};
 static const GLfloat clear_depth[] = {1.0f, 1.0f, 1.0f, 1.0f};
 
-bool MultiLoadAndCreateTextures(string path_and_file_texture_1, string path_and_file_texture_2,
-	unsigned int* dst_texture_id, unsigned int* dst_texture_id2);
+bool MultiLoadAndCreateTextures(string path_and_file_texture_1, string path_and_file_texture_2, string path_and_file_texture_3,
+	unsigned int* dst_texture_id, unsigned int* dst_texture_id2, unsigned int* dst_texture_id3);
 // This is the callback we'll be registering with GLFW for keyboard handling.
 // The only thing we're doing here is setting up the window to close when we press ESC
 void my_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -154,27 +154,32 @@ void Init(void)
 	glUseProgram(texture_program);
 	unsigned int texture_id = -1;
 	unsigned int texture_id2 = -1;
+	unsigned int texture_id3 = -1;
 	//LoadAndCreateTexture2D("Texture/Ozzy3.bmp", &texture_id);
 	//LoadAndCreateTexture2D("Texture/ColorGradient.bmp", &texture_id2);
-	MultiLoadAndCreateTextures("Texture/ColorGradient.bmp", "Texture/Ozzy3.bmp", &texture_id, &texture_id2);
+	MultiLoadAndCreateTextures("Texture/ColorGradient.bmp", "Texture/Ozzy3.bmp", "Texture/LakeNightLandscapeSquared.bmp", &texture_id, &texture_id2, &texture_id3);
     // 2. Bind them to texture targets and texture units.
-	glActiveTexture(GL_TEXTURE0);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, texture_id);
-	glBindTexture(GL_TEXTURE_2D, texture_id2);
+	//glActiveTexture(GL_TEXTURE0);
+	//glActiveTexture(GL_TEXTURE1);
+	//glBindTexture(GL_TEXTURE_2D, texture_id);
+	//glBindTexture(GL_TEXTURE_2D, texture_id2);
     // 3. Assign the texture unit to a glsl uniform sampler 2D variable. 
 	int texture_location = glGetUniformLocation(texture_program, "texture_background");
 	int texture_location2 = glGetUniformLocation(texture_program, "texture_foreground");
+	int texture_location3 = glGetUniformLocation(texture_program, "texture_midground");
+	int blend_mode = glGetUniformLocation(texture_program, "texture_blend");
 	glUniform1i(texture_location, 0);
 	glUniform1i(texture_location2, 1);
+	glUniform1i(texture_location3, 2);
+	glUniform1i(blend_mode, 2);
 
 
 
 
 }
 
-bool MultiLoadAndCreateTextures(string path_and_file_texture_1, string path_and_file_texture_2,
-                                     unsigned int* dst_texture_id, unsigned int* dst_texture_id2)
+bool MultiLoadAndCreateTextures(string path_and_file_texture_1, string path_and_file_texture_2, string path_and_file_texture_3,
+                                     unsigned int* dst_texture_id, unsigned int* dst_texture_id2, unsigned int* dst_texture_id3)
 {
 
 	int channels1;
@@ -185,16 +190,19 @@ bool MultiLoadAndCreateTextures(string path_and_file_texture_1, string path_and_
 	int width2;
 	int height2;
 
+	int channels3;
+	int width3;
+	int height3;
+
 	unsigned char* data1;
 	unsigned char* data2;
+	unsigned char* data3;
 
 	LoadBMPFromFile(path_and_file_texture_1, &width1, &height1, &channels1, &data1);
 	LoadBMPFromFile(path_and_file_texture_2, &width2, &height2, &channels2, &data2);
+	LoadBMPFromFile(path_and_file_texture_3, &width3, &height3, &channels3, &data3);
 
-	if (data1 == NULL || data2 == NULL)return false;
-
-
-
+	if (data1 == NULL || data2 == NULL || data3 == NULL)return false;
 
 
 	//**********************************************************************************************
@@ -271,8 +279,44 @@ bool MultiLoadAndCreateTextures(string path_and_file_texture_1, string path_and_
 	free(data2);
 
 
-	// Return the texture.
-	return dst_texture_id;
+
+	//**********************************************************************************************
+
+	// Activate a texture unit
+	glActiveTexture(GL_TEXTURE2);
+
+	// Generate a texture, this function allocates the memory and
+	// associates the texture with a variable.
+	glGenTextures(1, dst_texture_id3);
+
+	// Set a texture as active texture.
+	glBindTexture(GL_TEXTURE_2D, *dst_texture_id3);
+
+	// Change the parameters of your texture units.
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+
+	// Create a texture and load it to your graphics hardware. This texture is automatically associated
+	// with texture 0 and the textuer variable "texture" / the active texture.
+	if (channels2 == 3)
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width3, height3, 0, GL_BGR, GL_UNSIGNED_BYTE, data3);
+	else if (channels2 == 4)
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width3, height3, 0, GL_BGRA, GL_UNSIGNED_BYTE, data3);
+
+	//**********************************************************************************************
+	// Create a midmap texture pyramid and load it to the graphics hardware.
+	// Note, the MIN and MAG filter must be set to one of the available midmap filters.
+	//gluBuild2DMipmaps( GL_TEXTURE_2D, 3, width, height,GL_RGB, GL_UNSIGNED_BYTE, data );
+
+	// Delete your loaded data
+	free(data3);
+
+
+
+	return true;
 
 
 
