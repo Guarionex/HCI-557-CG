@@ -34,9 +34,25 @@ void main(void)
     {
         color = (tex_color_light.r)*tex_color + tex_color_mid;
     }
+	else if(texture_blend == 3)
+	{
+		color = (0.25 * tex_color) + tex_color_light * tex_color_mid.r;
+	}
+	else if(texture_blend == 4)
+	{
+		color = (1.0 * tex_color * tex_color_light.r) + tex_color_mid;
+	}
+	else if(texture_blend == 5)
+	{
+		color =  0.3 * pass_Color + (1.0 * tex_color * tex_color_light.r) + tex_color_mid;
+	}
+	else if(texture_blend == 6)
+	{
+		color = (0.25 * tex_color) + (0.5 * tex_color_light) + (1.0 * tex_color_mid);
+	}
     else
     {
-        color = 0.1 * pass_Color + tex_color;
+        color = 0.1 * pass_Color;
     }
     
 }

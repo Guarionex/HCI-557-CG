@@ -139,10 +139,10 @@ void main(void)
     // Calculate the color
     vec4 linearColor = vec4(0.0,0.0,0.0,0.0);
     
-    //for (int i=0; i<numLights; i++) {
-    //    vec4 new_light = useLight(allLights[i], surfacePostion, transformedNormal, normal, allMaterials[0] );
-    //    linearColor = linearColor + new_light;
-    //}
+    for (int i=0; i<numLights; i++) {
+        vec4 new_light = useLight(allLights[i], surfacePostion, transformedNormal, normal, allMaterials[0] );
+        linearColor = linearColor + new_light;
+    }
     
    
     // Gamma correction

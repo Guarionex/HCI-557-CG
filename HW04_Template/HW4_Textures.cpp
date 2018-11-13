@@ -68,6 +68,26 @@ static const GLfloat clear_depth[] = {1.0f, 1.0f, 1.0f, 1.0f};
 
 bool MultiLoadAndCreateTextures(string path_and_file_texture_1, string path_and_file_texture_2, string path_and_file_texture_3,
 	unsigned int* dst_texture_id, unsigned int* dst_texture_id2, unsigned int* dst_texture_id3);
+
+struct Material {
+	vec3 diffuse;
+	vec3 ambient;
+	vec3 specular;
+	vec3 emissive;
+	float shininess;
+	float transparency;
+} plane_material;
+
+struct Light {
+	vec4 light_position;
+	float diffuse_intensity;
+	float ambient_intensity;
+	float specular_intensity;
+	float attenuationCoefficient;
+	float cone_angle;
+	vec3 cone_direction;
+} light_source;
+
 // This is the callback we'll be registering with GLFW for keyboard handling.
 // The only thing we're doing here is setting up the window to close when we press ESC
 void my_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -144,20 +164,60 @@ void Init(void)
     plane0.create(4.0, 4.0, texture_program);
 
 
+
     //-------------------------------------------------------------
     //-------------------------------------------------------------
     //
     // TODO
     //
     // 1. Load the textures
-	//GLMultiTexture* texture = new GLMultiTexture();
 	glUseProgram(texture_program);
+
+	plane_material.diffuse = vec3(1.0, 1.0, 1.0);
+	plane_material.ambient = vec3(1.0, 1.0, 1.0);
+	plane_material.specular = vec3(1.0, 1.0, 1.0);
+	plane_material.emissive = vec3(0.0, 0.0, 0.0);
+	plane_material.shininess = 12.0;
+	plane_material.transparency = 1.0;
+
+	int diffuseColorPos = glGetUniformLocation(texture_program, "allMaterials[0].diffuse");
+	int ambientColorPos = glGetUniformLocation(texture_program, "allMaterials[0].ambient");
+	int specularColorPos = glGetUniformLocation(texture_program, "allMaterials[0].specular");
+	int emissiveColorPos = glGetUniformLocation(texture_program, "allMaterials[0].emissive");
+	int shininessColorPos = glGetUniformLocation(texture_program, "allMaterials[0].shininess");
+	int transparencyColorPos = glGetUniformLocation(texture_program, "allMaterials[0].transparency");
+	glUniform3fv(diffuseColorPos, 1, &plane_material.diffuse[0]);
+	glUniform3fv(ambientColorPos, 1, &plane_material.ambient[0]);
+	glUniform3fv(specularColorPos, 1, &plane_material.specular[0]);
+	glUniform3fv(emissiveColorPos, 1, &plane_material.emissive[0]);
+	glUniform1f(shininessColorPos, plane_material.shininess);
+	glUniform1f(transparencyColorPos, plane_material.transparency);
+
+	light_source.light_position = vec4(0.0, 0.0, -20.0, 0.0);
+	light_source.ambient_intensity = 0.2;
+	light_source.specular_intensity = 4.5;
+	light_source.diffuse_intensity = 1.0;
+	light_source.attenuationCoefficient = 0.0;
+
+	int lightPos = glGetUniformLocation(texture_program, "allLights[0].light_position");
+	int lightAmbientPos = glGetUniformLocation(texture_program, "allLights[0].ambient_intensity");
+	int lightSpecularPos = glGetUniformLocation(texture_program, "allLights[0].specular_intensity");
+	int lightdiffusePos = glGetUniformLocation(texture_program, "allLights[0].diffuse_intensity");
+	int lightAttenuationPos = glGetUniformLocation(texture_program, "allLights[0].attenuationCoefficient");
+	int lightSourceNumPos = glGetUniformLocation(texture_program, "numLights");
+	glUniform4fv(lightPos, 1, &light_source.light_position[0]);
+	glUniform1f(lightAmbientPos, light_source.ambient_intensity);
+	glUniform1f(lightSpecularPos, light_source.specular_intensity);
+	glUniform1f(lightdiffusePos, light_source.diffuse_intensity);
+	glUniform1f(lightAttenuationPos, light_source.attenuationCoefficient);
+	glUniform1i(lightSourceNumPos, 1);
+
 	unsigned int texture_id = -1;
 	unsigned int texture_id2 = -1;
 	unsigned int texture_id3 = -1;
 	//LoadAndCreateTexture2D("Texture/Ozzy3.bmp", &texture_id);
 	//LoadAndCreateTexture2D("Texture/ColorGradient.bmp", &texture_id2);
-	MultiLoadAndCreateTextures("Texture/ColorGradient.bmp", "Texture/Ozzy3.bmp", "Texture/LakeNightLandscapeSquared.bmp", &texture_id, &texture_id2, &texture_id3);
+	MultiLoadAndCreateTextures("Texture/ColorGradient.bmp", "Texture/LakeNightLandscapeSquared.bmp", "Texture/Ozzy3.bmp", &texture_id, &texture_id2, &texture_id3);
     // 2. Bind them to texture targets and texture units.
 	//glActiveTexture(GL_TEXTURE0);
 	//glActiveTexture(GL_TEXTURE1);
@@ -171,10 +231,9 @@ void Init(void)
 	glUniform1i(texture_location, 0);
 	glUniform1i(texture_location2, 1);
 	glUniform1i(texture_location3, 2);
-	glUniform1i(blend_mode, 2);
+	glUniform1i(blend_mode, 5);
 
-
-
+	
 
 }
 
