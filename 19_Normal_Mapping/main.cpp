@@ -192,7 +192,7 @@ void Init(void)
     // The ground plane
 
     // Load the shader program
-    texture_program_plane = cs557::LoadAndCreateShaderProgram("../normal_map_program.vs", "../normal_map_program.fs");
+    texture_program_plane = cs557::LoadAndCreateShaderProgram("normal_map_program.vs", "normal_map_program.fs");
     glUseProgram(texture_program_plane);
 
     // create the planes
@@ -201,7 +201,7 @@ void Init(void)
 
     // Load the texture and create it.
     // Note that this function bind the texture to texture unit GL_TEXTURE0 
-    LoadAndCreateTexture2D("../textures/water-texture.bmp", &texture_id_plane, GL_REPEAT, GL_TEXTURE0);
+    LoadAndCreateTexture2D("textures/water-texture.bmp", &texture_id_plane, GL_REPEAT, GL_TEXTURE0);
 
     // Activate the texture unit and bind the texture. 
     glActiveTexture(GL_TEXTURE0);
@@ -216,7 +216,7 @@ void Init(void)
       // Load the normal map texture and create it.
     // Note that this function bind the texture to texture unit GL_TEXTURE0 
     glActiveTexture(GL_TEXTURE2);
-    LoadAndCreateTexture2D("../textures/water-texture_NRM.bmp", &texture_id_plane_norm, GL_REPEAT, GL_TEXTURE2);
+    LoadAndCreateTexture2D("textures/water-texture_NRM.bmp", &texture_id_plane_norm, GL_REPEAT, GL_TEXTURE2);
 
      // Activate the texture unit and bind the texture. 
     glUseProgram(texture_program_plane);
@@ -239,15 +239,15 @@ void Init(void)
     // The teapot
 
      // Load the shader program
-    texture_program_teapot = cs557::LoadAndCreateShaderProgram("../normal_map_program.vs", "../normal_map_program.fs");
+    texture_program_teapot = cs557::LoadAndCreateShaderProgram("normal_map_program.vs", "normal_map_program.fs");
     glUseProgram(texture_program_teapot);
 
     // Create the teapot
-    obj0.create("../teapot_t.obj", texture_program_teapot);
+    obj0.create("teapot_t.obj", texture_program_teapot);
 
     // Load the texture and create it.
     // Note that this function bind the texture to texture unit GL_TEXTURE0 
-    LoadAndCreateTexture2D("../textures/texture_cracked_clay_2048x2048.bmp", &texture_id_teapot, GL_REPEAT, GL_TEXTURE0);
+    LoadAndCreateTexture2D("textures/texture_cracked_clay_2048x2048.bmp", &texture_id_teapot, GL_REPEAT, GL_TEXTURE0);
 
     // Activate the texture unit and bind the texture. 
     glActiveTexture(GL_TEXTURE0);
@@ -261,7 +261,7 @@ void Init(void)
 
      // Load the normal map texture and create it.
     // Note that this function bind the texture to texture unit GL_TEXTURE0 
-    LoadAndCreateTexture2D("../textures/texture_cracked_clay_2048x2048_NRM.bmp", &texture_id_teapot_norm, GL_REPEAT, GL_TEXTURE1);
+    LoadAndCreateTexture2D("textures/texture_cracked_clay_2048x2048_NRM.bmp", &texture_id_teapot_norm, GL_REPEAT, GL_TEXTURE1);
 
      // Activate the texture unit and bind the texture. 
     glUseProgram(texture_program_teapot);

@@ -30,7 +30,7 @@
 #include "CoordSystem.h"
 #include "Plane3D.h"
 #include "Texture.h"
-
+#include <ctime>
 
 
 using namespace std;
