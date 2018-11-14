@@ -50,6 +50,14 @@ void main(void)
 	{
 		color = (0.25 * tex_color) + (0.5 * tex_color_light) + (1.0 * tex_color_mid);
 	}
+	else if(texture_blend == 7)
+	{
+		color = 0.1 * pass_Color - tex_color + tex_color_light + tex_color_mid;
+	}
+	else if(texture_blend == 8)
+	{
+		color = 0.1 * pass_Color + tex_color + tex_color_light - tex_color_mid;
+	}
     else
     {
         color = 0.1 * pass_Color;

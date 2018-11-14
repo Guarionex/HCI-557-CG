@@ -58,6 +58,7 @@ cs557::CoordinateSystem coordinateSystem;
 
 
 int texture_program = -1;
+int mode = 0;
 
 cs557::Plane plane0;
 
@@ -115,6 +116,24 @@ void my_key_callback(GLFWwindow* window, int key, int scancode, int action, int 
     
 
     }
+	else if (key == 87 && action == GLFW_PRESS) // w
+	{
+		mode += 1;
+		if (mode > 9) mode = 0;
+
+		glUseProgram(texture_program);
+		glUniform1i(glGetUniformLocation(texture_program, "texture_blend"), mode);
+		glUseProgram(0);
+	}
+	else if (key == 82 && action == GLFW_PRESS) // r
+	{
+		mode = 0;
+
+		glUseProgram(texture_program);
+		glUniform1i(glGetUniformLocation(texture_program, "texture_blend"), mode);
+		glUseProgram(0);
+
+	}
 
 
 }
@@ -218,7 +237,7 @@ void Init(void)
 	//LoadAndCreateTexture2D("Texture/Ozzy3.bmp", &texture_id);
 	//LoadAndCreateTexture2D("Texture/ColorGradient.bmp", &texture_id2);
 	MultiLoadAndCreateTextures("Texture/ColorGradient.bmp", "Texture/LakeNightLandscapeSquared.bmp", "Texture/Ozzy.bmp", &texture_id, &texture_id2, &texture_id3);
-    // 2. Bind them to texture targets and texture units.
+    // 2. Bind them to texture targets and texture units. Moved to helper method
 	//glActiveTexture(GL_TEXTURE0);
 	//glActiveTexture(GL_TEXTURE1);
 	//glBindTexture(GL_TEXTURE_2D, texture_id);
@@ -231,7 +250,7 @@ void Init(void)
 	glUniform1i(texture_location, 0);
 	glUniform1i(texture_location2, 1);
 	glUniform1i(texture_location3, 2);
-	glUniform1i(blend_mode, 5);
+	glUniform1i(blend_mode, mode);
 	//glUniform1i(blend_mode, 4);
 
 	

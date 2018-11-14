@@ -189,24 +189,11 @@ void Init(void)
 	//int texture_location = glGetUniformLocation(texture_program, "tex");
 	//glUniform1i(texture_location, 0);
 
-
-
-	//// 1. Load the textures
-	////glActiveTexture(GL_TEXTURE2);
-	//unsigned int texture_normal_id = -1;
-	//LoadAndCreateTexture2D("Texture/PixelNoiseMap.bmp", &texture_normal_id, GL_REPEAT, GL_TEXTURE1);
-	//// 2. Bind them to texture targets and texture units.
-	////glUseProgram(texture_program);
-	//glActiveTexture(GL_TEXTURE1);
-	//glBindTexture(GL_TEXTURE_2D, texture_normal_id);
-	//// 3. Assign the texture unit to a glsl uniform sampler 2D variable. 
-	//int texture_normal_location = glGetUniformLocation(texture_program, "tex_normalmap");
-	//glUniform1i(texture_normal_location, 1);
-
 	glUseProgram(texture_program);
 	unsigned int texture_id = -1;
 	unsigned int texture_normal_id = -1;
-	MultiLoadAndCreateTextures("Texture/Landscape.bmp", "Texture/NormalMap.bmp", &texture_id, &texture_normal_id);
+	//MultiLoadAndCreateTextures("Texture/Landscape.bmp", "Texture/NormalMap.bmp", &texture_id, &texture_normal_id);
+	MultiLoadAndCreateTextures("Texture/Landscape.bmp", "Texture/PixelNoiseMap.bmp", &texture_id, &texture_normal_id);
 	int texture_location = glGetUniformLocation(texture_program, "tex");
 	int texture_normal_location = glGetUniformLocation(texture_program, "tex_normalmap");
 	glUniform1i(texture_location, 0);
