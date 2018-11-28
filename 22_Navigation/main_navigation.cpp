@@ -218,7 +218,7 @@ int main(int argc, const char * argv[])
     apperance_0->updateLightSources();
 
     
-    loadedModel1 = new GLObjectObj("../../data/height_map_t.obj");
+    loadedModel1 = new GLObjectObj("../data/height_map_t.obj");
     loadedModel1->setApperance(*apperance_0);
     loadedModel1->init();
     
