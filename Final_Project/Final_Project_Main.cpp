@@ -37,224 +37,191 @@ using namespace cs557;
 //
 //	Some global variables to keep track of
 
-GLfloat X = 0.0f;		// Translate screen to x direction (left or right)
-GLfloat Y = 0.0f;		// Translate screen to y direction (up or down)
-GLfloat Z = 0.0f;		// Translate screen to z direction (zoom in or out)
-GLfloat rotX = 0.0f;	// Rotate screen on x axis 
-GLfloat rotY = 0.0f;	// Rotate screen on y axis
-GLfloat rotZ = 0.0f;	// Rotate screen on z axis
+// The handle to the window object
+GLFWwindow *window = NULL;
 
-GLfloat rotLx = 0.0f;   // Translate screen by using  the glulookAt function (left or right)
-GLfloat rotLy = 0.0f;   // Translate screen by using  the glulookAt function (up or down)
-GLfloat rotLz = 0.0f;   // Translate screen by using  the glulookAt function (zoom in or out)
+// Transformation pipeline variables
 
-void glDisplayLines(void);  // Did declare the function so I did not have to check for order of the functions
+glm::mat4 projectionMatrix; // Store the projection matrix
+glm::mat4 viewMatrix;       // Store the view matrix
+glm::mat4 modelMatrix;      // Store the model matrix
+glm::mat4 modelMatrixCoord;
 
-// Initiliaze the OpenGL window
-void init(void)
+
+//------------------------------------------------------------
+//
+//	Some model  to keep track of
+
+// a corodinate system
+cs557::CoordinateSystem coordinateSystem;
+
+
+
+int texture_program = -1;
+
+cs557::Plane plane0;
+
+
+// Set up our green background color
+GLfloat clear_color[] = { 0.6f, 0.7f, 1.0f, 1.0f };
+static const GLfloat clear_depth[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+
+// This is the callback we'll be registering with GLFW for keyboard handling.
+// The only thing we're doing here is setting up the window to close when we press ESC
+void my_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	glClearColor(0.0, 0.0, 0.0, 0.0);			// Clear the color 
-	glShadeModel(GL_FLAT);						// Set the shading model to GL_FLAT
-	glEnable(GL_LINE_SMOOTH);
-	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);		// Set Line Antialiasing
-}
-
-// Draw the lines (x,y,z)
-void display(void)
-{
-	glClear(GL_COLOR_BUFFER_BIT);				// Clear the Color Buffer 
-	glPushMatrix();								// It is important to push the Matrix before calling glRotatef and glTranslatef
-	glRotatef(rotX, 1.0, 0.0, 0.0);				// Rotate on x
-	glRotatef(rotY, 0.0, 1.0, 0.0);				// Rotate on y
-	glRotatef(rotZ, 0.0, 0.0, 1.0);				// Rotate on z
-	glTranslatef(X, Y, Z);						// Translates the screen left or right, up or down or zoom in zoom out
-
-	// Draw the positive side of the lines x,y,z
-	glBegin(GL_LINES);
-	glColor3f(0.0, 1.0, 0.0);			// Green for x axis
-	glVertex3f(0, 0, 0);
-	glVertex3f(10, 0, 0);
-	glColor3f(1.0, 0.0, 0.0);				// Red for y axis
-	glVertex3f(0, 0, 0);
-	glVertex3f(0, 10, 0);
-	glColor3f(0.0, 0.0, 1.0);				// Blue for z axis
-	glVertex3f(0, 0, 0);
-	glVertex3f(0, 0, 10);
-	glEnd();
-
-	// Dotted lines for the negative sides of x,y,z
-	glEnable(GL_LINE_STIPPLE);				// Enable line stipple to use a dotted pattern for the lines
-	glLineStipple(1, 0x0101);				// Dotted stipple pattern for the lines
-	glBegin(GL_LINES);
-	glColor3f(0.0, 1.0, 0.0);			// Green for x axis
-	glVertex3f(-10, 0, 0);
-	glVertex3f(0, 0, 0);
-	glColor3f(1.0, 0.0, 0.0);				// Red for y axis
-	glVertex3f(0, 0, 0);
-	glVertex3f(0, -10, 0);
-	glColor3f(0.0, 0.0, 1.0);				// Blue for z axis
-	glVertex3f(0, 0, 0);
-	glVertex3f(0, 0, -10);
-	glEnd();
-
-	glDisable(GL_LINE_STIPPLE);				// Disable the line stipple
-	glPopMatrix();							// Don't forget to pop the Matrix
-	glutSwapBuffers();
-}
-
-// This function is called whenever the window size is changed
-void reshape(int w, int h)
-{
-	glViewport(0, 0, (GLsizei)w, (GLsizei)h);				// Set the viewport
-	glMatrixMode(GL_PROJECTION);								// Set the Matrix mode
-	glLoadIdentity();
-	gluPerspective(75, (GLfloat)w / (GLfloat)h, 0.10, 100.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	gluLookAt(rotLx, rotLy, 15.0 + rotLz, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-}
-
-// This function is used for the navigation keys
-void keyboard(unsigned char key, int x, int y)
-{
-	switch (key) {
-
-		// x,X,y,Y,z,Z uses the glRotatef() function
-	case 'x':				// Rotates screen on x axis 
-		rotX -= 0.5f;
-		break;
-	case 'X':				// Opposite way 
-		rotX += 0.5f;
-		break;
-	case 'y':				// Rotates screen on y axis
-		rotY -= 0.5f;
-		break;
-	case 'Y':				// Opposite way
-		rotY += 0.5f;
-		break;
-	case 'z':				// Rotates screen on z axis
-		rotZ -= 0.5f;
-		break;
-	case 'Z':				// Opposite way
-		rotZ += 0.5f;
-		break;
-
-		// j,J,k,K,l,L uses the gluLookAt function for navigation
-	case 'j':
-		rotLx -= 0.2f;
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		gluLookAt(rotLx, rotLy, 15.0 + rotLz, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-		break;
-	case 'J':
-		rotLx += 0.2f;
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		gluLookAt(rotLx, rotLy, 15.0 + rotLz, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-		break;
-	case 'k':
-		rotLy -= 0.2f;
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		gluLookAt(rotLx, rotLy, 15.0 + rotLz, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-		break;
-	case 'K':
-
-		rotLy += 0.2f;
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		gluLookAt(rotLx, rotLy, 15.0 + rotLz, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-		break;
-	case 'l': // It has a special case when the rotLZ becames less than -15 the screen is viewed from the opposite side
-			  // therefore this if statement below does not allow rotLz be less than -15
-		if (rotLz + 14 >= 0)
-			rotLz -= 0.2f;
-
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		gluLookAt(rotLx, rotLy, 15.0 + rotLz, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-		break;
-	case 'L':
-		rotLz += 0.2f;
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		gluLookAt(rotLx, rotLy, 15.0 + rotLz, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-		break;
-	case 'b':				// Rotates on x axis by -90 degree
-		rotX -= 90.0f;
-		break;
-	case 'B':				// Rotates on y axis by 90 degree
-		rotX += 90.0f;
-		break;
-	case 'n':				// Rotates on y axis by -90 degree
-		rotY -= 90.0f;
-		break;
-	case 'N':				// Rotates on y axis by 90 degree
-		rotY += 90.0f;
-		break;
-	case 'm':				// Rotates on z axis by -90 degree
-		rotZ -= 90.0f;
-		break;
-	case 'M':				// Rotates on z axis by 90 degree
-		rotZ += 90.0f;
-		break;
-	case 'o':				// Default, resets the translations vies from starting view
-	case 'O':
-		X = Y = 0.0f;
-		Z = 0.0f;
-		rotX = 0.0f;
-		rotY = 0.0f;
-		rotZ = 0.0f;
-		rotLx = 0.0f;
-		rotLy = 0.0f;
-		rotLz = 0.0f;
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		gluLookAt(rotLx, rotLy, 15.0f + rotLz, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-		break;
+	//cout << key ;
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	{
+		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
-	glutPostRedisplay();	// Redraw the scene
-}
+	else if (key == 84 && action == GLFW_PRESS) // t
+	{
 
-// called on special key pressed
-void specialKey(int key, int x, int y) {
-
-	// The keys below are using the gluLookAt() function for navigation
-	// Check which key is pressed
-	switch (key) {
-	case GLUT_KEY_LEFT:    // Rotate on x axis
-		X -= 0.1f;
-		break;
-	case GLUT_KEY_RIGHT:	// Rotate on x axis (opposite)
-		X += 0.1f;
-		break;
-	case GLUT_KEY_UP:		// Rotate on y axis 
-		Y += 0.1f;
-		break;
-	case GLUT_KEY_DOWN:	// Rotate on y axis (opposite)
-		Y -= 0.1f;
-		break;
-	case GLUT_KEY_PAGE_UP:  // Roatae on z axis
-		Z -= 0.1f;
-		break;
-	case GLUT_KEY_PAGE_DOWN:// Roatae on z axis (opposite)
-		Z += 0.1f;
-		break;
 	}
-	glutPostRedisplay();		// Redraw the scene
+	else if (key == 46 && action == GLFW_PRESS)
+	{
+
+	}
+	else if (key == 44 && action == GLFW_PRESS)
+	{
+
+
+	}
+	else if (key == 66 && action == GLFW_PRESS)
+	{
+
+
+	}
+
+
 }
-// Main entry point of the program
-int main(int argc, char** argv)
+
+
+
+
+
+//------------------------------------------------------------
+//
+//	INIT THE SCENE
+
+void Init(void)
 {
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);		// Setup display mode to double buffer and RGB color
-	glutInitWindowSize(600, 600);						// Set the screen size
-	glutCreateWindow("OpenGL 3D Navigation Program");
-	init();
-	glutReshapeFunc(reshape);
-	glutDisplayFunc(display);
-	glutKeyboardFunc(keyboard);		// set window's key callback 
-	glutSpecialFunc(specialKey);	// set window's to specialKey callback
-	glutMainLoop();
-	return 0;
+
+	// Init the GLFW Window
+	window = cs557::initWindow();
+
+	// set a keyboard callback
+	glfwSetKeyCallback(window, my_key_callback);
+
+	// Initialize the GLEW apis
+	cs557::initGlew();
+
+
+	//-----------------------------------------------------------------------------------------------------------------------
+	// Projection transformations
+	projectionMatrix = glm::perspective(1.57f, (float)800 / (float)600, 0.1f, 100.f);
+	modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	viewMatrix = glm::lookAt(glm::vec3(0.0f, 0.0f, -4.f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	modelMatrixCoord = glm::translate(glm::mat4(1.0f), glm::vec3(.0f, 0.0f, 0.0f));
+
+
+	// create a coordinate system
+	coordinateSystem.create(2.5);
+
+	//--------------------------------------------------------------------------------
+	// Note that you have to modify the default texture program since it only 
+	// renders a single texture
+	// Load the shader program
+	texture_program = cs557::LoadAndCreateShaderProgram("../texture_program.vs", "../texture_program.fs");
+
+
+
+	// create a plane.
+	// PASS THE TEXTURE PROGRAM AS VARIABLE TO THE PLANE
+	plane0.create(4.0, 4.0, texture_program);
+
+
+	//-------------------------------------------------------------
+	//-------------------------------------------------------------
+	//
+	// TODO
+	//
+	// 1. Load the textures
+	// 2. Bind them to texture targets and texture units.
+	// 3. Assign the texture unit to a glsl uniform sampler 2D variable. 
+
+
+
+
+
+}
+
+//------------------------------------------------------------
+//
+//	RENDER THE SCENE
+
+void Draw(void)
+{
+
+
+
+	// Enable depth test
+	glEnable(GL_DEPTH_TEST); // ignore this line
+
+	while (!glfwWindowShouldClose(window))
+	{
+
+		// Clear the entire buffer with our green color (sets the background to be green).
+		glClearBufferfv(GL_COLOR, 0, clear_color);
+		glClearBufferfv(GL_DEPTH, 0, clear_depth);
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//// This renders the objects
+
+		// update the camera values.
+		// Note that this line changes the view matrix.
+		glm::mat4 rotated_view = viewMatrix * cs557::GetTrackball().getRotationMatrix();
+
+		//----------------------------------------------------------------------------------------------------------------------------
+		// Object 0
+		// This draws a coordinate system
+		coordinateSystem.draw(projectionMatrix, rotated_view, modelMatrixCoord);
+
+
+
+		// draw the plane
+		plane0.draw(projectionMatrix, rotated_view, modelMatrix);
+
+
+		// Swap the buffers so that what we drew will appear on the screen.
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+}
+
+
+
+
+
+
+
+
+//------------------------------------------------------------
+//
+//	RENDER THE SCENE
+int main(int argc, const char *argv[])
+{
+	cout << "This code example demonstrates texture mapping." << endl;
+	cout << "Rafael Radkowski\nrafael@iastate.edu\nIowa State University" << endl;
+	cout << "This example is part of ME/CS/CPRE557" << endl;
+
+
+
+	Init();
+
+	Draw();
+
+	return 1;
 }
