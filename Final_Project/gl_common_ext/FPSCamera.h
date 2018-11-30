@@ -14,20 +14,19 @@ namespace cs557
 
 	public:
 
-		FPSCamera(vec3 eye, float roll, float pitch, float yaw);
-		void UpdateView();
-		mat4 GetViewMatrix();
+		FPSCamera(vec3 eye, float pitch, float yaw);
+		mat4 GetViewMatrix() const;
 		void KeyPressed(const unsigned char key);
 		void MouseMove(int x, int y, int width, int height);
 		void MousePressed(int button, int state, int x, int y);
 
 	private:
 		mat4 viewMatrix;
-		vec3 eyeVector;
-		float _roll;
+		vec3 _eye;
 		float _pitch;
 		float _yaw;
 		bool isMousePressed;
 		vec2 mousePosition;
+		void UpdateView();
 	};
 }

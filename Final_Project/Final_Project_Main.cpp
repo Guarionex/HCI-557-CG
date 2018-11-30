@@ -45,7 +45,7 @@ float eye_z = -4.0f;
 int xOrigin = 1280 / 2;
 int yOrigin = 1024 / 2;
 
-FPSCamera camera = FPSCamera(vec3(eye_x, eye_y, eye_z), 0, 0, 0);
+FPSCamera camera = FPSCamera(vec3(eye_x, eye_y, eye_z), 0, 0);
 
 CoordinateSystem coordinateSystem;
 
