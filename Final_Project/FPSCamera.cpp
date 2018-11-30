@@ -89,8 +89,8 @@ void FPSCamera::MouseMove(int x, int y, int width, int height)
 	//mousePosition is the last mouse position
 	vec2 mouse_delta = vec2(x, y) - mousePosition;
 
-	const float mouseX_Sensitivity = 0.1f;
-	const float mouseY_Sensitivity = 0.1f;
+	const float mouseX_Sensitivity = 0.01f;
+	const float mouseY_Sensitivity = 0.01f;
 	//note that yaw and pitch must be converted to radians.
 	//this is done in UpdateView() by glm::rotate
 	_yaw += mouseX_Sensitivity * mouse_delta.x;
