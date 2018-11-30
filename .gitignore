@@ -70,6 +70,7 @@ assignments/02_Light_and_Material/HW2_Light_and_Material.VC.VC.opendb
 .vscode
 .vs/
 *.ipch
+*.VC.db
 bak
 build
 06_Lighting.code-workspace
