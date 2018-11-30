@@ -1,6 +1,5 @@
 #pragma once
 #include <algorithm>
-#include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 using namespace glm;
