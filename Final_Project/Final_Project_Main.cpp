@@ -29,9 +29,7 @@
 #include "ModelPlane.h"
 #include <GL/glut.h>
 #include "FPSCamera.h"
-
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "Skybox.h"
 
 using namespace std;
 using namespace cs557;
@@ -49,7 +47,7 @@ int xOrigin = 1280 / 2;
 int yOrigin = 1024 / 2;
 
 FPSCamera camera = FPSCamera(vec3(eye_x, eye_y, eye_z), 0, 0);
-
+SkyBox skyBox;
 CoordinateSystem coordinateSystem;
 
 int texture_program = -1;
@@ -60,17 +58,7 @@ Plane plane0;
 GLfloat clear_color[] = { 0.6f, 0.7f, 1.0f, 1.0f };
 static const GLfloat clear_depth[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-unsigned int cubemapTexture = -1;
-unsigned int sky_VAO;
-unsigned int sky_VBO;
-unsigned int loadCubemap(vector<std::string> faces);
-void createCube();
-GLint skyBoxViewMatrixLocation;
-GLint skyBoxProjMatrixLocation;
-
-
-
-void Init(void)
+void Init()
 {
 	initGlew();
 	projectionMatrix = perspective(1.57f, (float)800 / (float)600, 0.1f, 200.f);
@@ -84,22 +72,11 @@ void Init(void)
 
 	plane0.create(4.0, 4.0, texture_program);
 
-	vector<std::string> faces
-	{
-		"textures/leftImage.png",
-		"textures/rightImage.png",
-		"textures/upImage.png",
-		"textures/downImage.png",
-		"textures/frontImage.png",
-		"textures/backImage.png"
-	};
-	cubemapTexture = loadCubemap(faces);
-	createCube();
-	skyBoxViewMatrixLocation = glGetUniformLocation(skyBox_program, "view"); // Get the location of our view matrix in the shader
-	skyBoxProjMatrixLocation = glGetUniformLocation(skyBox_program, "projection"); // Get the location of our projection matrix in the shader
+	skyBox = SkyBox("textures/leftImage.png", "textures/rightImage.png", "textures/upImage.png",
+	                "textures/downImage.png", "textures/frontImage.png", "textures/backImage.png", skyBox_program);
 }
 
-void Draw(void)
+void Draw()
 {
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -110,21 +87,7 @@ void Draw(void)
 	
 	coordinateSystem.draw(projectionMatrix, rotated_view, modelMatrixCoord);
 	plane0.draw(projectionMatrix, rotated_view, modelMatrix);
-
-	glDepthFunc(GL_LEQUAL);
-	glUseProgram(skyBox_program);
-
-	mat4 skyBoxView = mat4(mat3(rotated_view));
-	glUniformMatrix4fv(skyBoxViewMatrixLocation, 1, GL_FALSE, &skyBoxView[0][0]);
-	glUniformMatrix4fv(skyBoxProjMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
-
-	glBindVertexArray(sky_VAO);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	glBindVertexArray(0);
-	glUseProgram(0);
-	glDepthFunc(GL_LESS);
+	skyBox.Draw(projectionMatrix, rotated_view);
 
 	glutSwapBuffers();
 }
@@ -153,97 +116,6 @@ void mouse_motion(int x, int y)
 {
 	camera.MouseMove(x, y, 1280, 1024);
 	glutPostRedisplay();
-}
-
-unsigned int loadCubemap(vector<std::string> faces)
-{
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-
-	int width, height, nrChannels;
-	for (unsigned int i = 0; i < faces.size(); i++)
-	{
-		unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
-		if (data)
-		{
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-				0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
-			);
-			stbi_image_free(data);
-		}
-		else
-		{
-			std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
-			stbi_image_free(data);
-		}
-	}
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-	return textureID;
-}
-
-void createCube()
-{
-	float skyboxVertices[] = {
-		// positions          
-	-100.0f,  100.0f, -100.0f,
-	-100.0f, -100.0f, -100.0f,
-	 100.0f, -100.0f, -100.0f,
-	 100.0f, -100.0f, -100.0f,
-	 100.0f,  100.0f, -100.0f,
-	-100.0f,  100.0f, -100.0f,
-
-	-100.0f, -100.0f,  100.0f,
-	-100.0f, -100.0f, -100.0f,
-	-100.0f,  100.0f, -100.0f,
-	-100.0f,  100.0f, -100.0f,
-	-100.0f,  100.0f,  100.0f,
-	-100.0f, -100.0f,  100.0f,
-
-	 100.0f, -100.0f, -100.0f,
-	 100.0f, -100.0f,  100.0f,
-	 100.0f,  100.0f,  100.0f,
-	 100.0f,  100.0f,  100.0f,
-	 100.0f,  100.0f, -100.0f,
-	 100.0f, -100.0f, -100.0f,
-
-	-100.0f, -100.0f,  100.0f,
-	-100.0f,  100.0f,  100.0f,
-	 100.0f,  100.0f,  100.0f,
-	 100.0f,  100.0f,  100.0f,
-	 100.0f, -100.0f,  100.0f,
-	-100.0f, -100.0f,  100.0f,
-
-	-100.0f,  100.0f, -100.0f,
-	 100.0f,  100.0f, -100.0f,
-	 100.0f,  100.0f,  100.0f,
-	 100.0f,  100.0f,  100.0f,
-	-100.0f,  100.0f,  100.0f,
-	-100.0f,  100.0f, -100.0f,
-
-	-100.0f, -100.0f, -100.0f,
-	-100.0f, -100.0f,  100.0f,
-	 100.0f, -100.0f, -100.0f,
-	 100.0f, -100.0f, -100.0f,
-	-100.0f, -100.0f,  100.0f,
-	 100.0f, -100.0f,  100.0f
-	};
-
-	glGenVertexArrays(1, &sky_VAO);
-	glBindVertexArray(sky_VAO);
-
-	glGenBuffers(1, &sky_VBO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, sky_VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), skyboxVertices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
 }
 
 int main(int argc, char** argv)
