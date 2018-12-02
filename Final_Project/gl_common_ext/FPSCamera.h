@@ -18,6 +18,7 @@ namespace cs557
 		void KeyPressed(const unsigned char key);
 		void MouseMove(int x, int y, int width, int height);
 		void MousePressed(int button, int state, int x, int y);
+		vec3 GetPosition() const;
 
 	private:
 		mat4 viewMatrix;

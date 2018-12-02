@@ -32,6 +32,7 @@
 #include "FPSCamera.h"
 #include "Skybox.h"
 #include "stb_image.h"
+#include "shader.h";
 
 using namespace std;
 using namespace cs557;
@@ -70,6 +71,9 @@ unsigned int normal;
 unsigned int metallic;
 unsigned int roughness;
 unsigned int ao;
+Shader pbr_shader;
+vec3 lightPositions[4];
+vec3 lightColors[4];
 
 void Init()
 {
@@ -83,14 +87,22 @@ void Init()
 	texture_program = LoadAndCreateShaderProgram("shaders/texture_program.vs", "shaders/texture_program.fs");
 	normal_map_program = LoadAndCreateShaderProgram("shaders/normal_map_program.vs", "shaders/normal_map_program.fs");
 	skyBox_program = LoadAndCreateShaderProgram("shaders/skybox.vs", "shaders/skybox.fs");
-	pbr_program = LoadAndCreateShaderProgram("shaders/PBR.vs", "shaders/PBR.fs");
-
+	//pbr_program = LoadAndCreateShaderProgram("shaders/PBR.vs", "shaders/PBR.fs");
+	pbr_shader = Shader("shaders/PBR.vs", "shaders/PBR.fs");
 	//plane0.create(4.0, 4.0, texture_program);
 
-	camera = FPSCamera(vec3(0.0f, 0.0f, -4.0f), 0, 0);
+	camera = FPSCamera(vec3(0.0f, 0.0f, 4.0f), 0, 0);
 
 	skyBox = SkyBox("textures/leftImage.png", "textures/rightImage.png", "textures/upImage.png",
 	                "textures/downImage.png", "textures/frontImage.png", "textures/backImage.png", skyBox_program);
+
+	pbr_shader.use();
+	pbr_shader.setInt("albedoMap", 0);
+	pbr_shader.setInt("normalMap", 1);
+	pbr_shader.setInt("metallicMap", 2);
+	pbr_shader.setInt("roughnessMap", 3);
+	pbr_shader.setInt("aoMap", 4);
+
 
 	//glUseProgram(normal_map_program);
 	albedo = loadTexture("textures/asteroid/Albedo180FlipHor.bmp");
@@ -98,23 +110,31 @@ void Init()
 	metallic = loadTexture("textures/asteroid/Metalness180FlipHor.bmp");
 	roughness = loadTexture("textures/asteroid/Displacement180FlipHor.bmp");
 	ao = loadTexture("textures/asteroid/Emission180FlipHor.bmp");
-	vec3 lightPositions = vec3(0.0f, 0.0f, 10.0f);
-	vec3 lightColors = vec3(150.0f, 150.0f, 150.0f);
+	vec3 lightPosition = vec3(0.0f, 0.0f, 10.0f);
+	vec3 lightColor = vec3(150.0f, 150.0f, 150.0f);
+	lightPositions[0] = vec3(0.0f, 0.0f, 10.0f);
+	lightColors[0] = vec3(150.0f, 150.0f, 150.0f);
 
-	int albedo_Location = glGetUniformLocation(pbr_program, "albedoMap");
-	int normal_location = glGetUniformLocation(pbr_program, "normalMap");
-	int metallic_location = glGetUniformLocation(pbr_program, "metallicMap");
-	int roughness_location = glGetUniformLocation(pbr_program, "roughnessMap");
-	int ao_location = glGetUniformLocation(pbr_program, "aoMap");
-	int lightPos_location = glGetUniformLocation(pbr_program, "lightPositions[0]");
-	int lightColor_location = glGetUniformLocation(pbr_program, "lightColors[0]");
-	glUniform1i(albedo_Location, 0);
-	glUniform1i(normal_location, 1);
-	glUniform1i(metallic_location, 2);
-	glUniform1i(roughness_location, 3);
-	glUniform1i(ao_location, 4);
-	glUniform3fv(lightPos_location, 1, &lightPositions[0]);
-	glUniform3fv(lightColor_location, 1, &lightColors[0]);
+	//int albedo_Location = glGetUniformLocation(pbr_program, "albedoMap");
+	//int normal_location = glGetUniformLocation(pbr_program, "normalMap");
+	//int metallic_location = glGetUniformLocation(pbr_program, "metallicMap");
+	//int roughness_location = glGetUniformLocation(pbr_program, "roughnessMap");
+	//int ao_location = glGetUniformLocation(pbr_program, "aoMap");
+	//int lightPos_location = glGetUniformLocation(pbr_program, "lightPositions[0]");
+	//int lightColor_location = glGetUniformLocation(pbr_program, "lightColors[0]");
+	//glUniform1i(albedo_Location, 0);
+	//glUniform1i(normal_location, 1);
+	//glUniform1i(metallic_location, 2);
+	//glUniform1i(roughness_location, 3);
+	//glUniform1i(ao_location, 4);
+	//glUniform3fv(lightPos_location, 1, &lightPosition[0]);
+	//glUniform3fv(lightColor_location, 1, &lightColor[0]);
+
+	for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
+	{
+		pbr_shader.setVec3("lightPositions[" + std::to_string(i) + "]", lightPositions[i]);
+		pbr_shader.setVec3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
+	}
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, albedo);
@@ -127,7 +147,7 @@ void Init()
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, ao);
 
-	obj_model.create("models/asteroid/A7.obj", pbr_program);
+	obj_model.create("models/asteroid/A7.obj", pbr_shader.ID);
 
 	//unsigned int texture_id = -1;
 	//unsigned int texture_normal_id = -1;
@@ -153,7 +173,12 @@ void Draw()
 	
 	coordinateSystem.draw(projectionMatrix, rotated_view, modelMatrixCoord);
 	//plane0.draw(projectionMatrix, rotated_view, modelMatrix);
+
+	pbr_shader.use();
+	pbr_shader.setVec3("camPos", camera.GetPosition());
+
 	obj_model.draw(projectionMatrix, rotated_view, modelMatrix);
+	
 	skyBox.Draw(projectionMatrix, rotated_view);
 
 	glutSwapBuffers();
