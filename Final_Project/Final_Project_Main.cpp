@@ -108,8 +108,8 @@ void Init()
 	albedo = loadTexture("textures/asteroid/Albedo180FlipHor.bmp");
 	normal = loadTexture("textures/asteroid/Normal180FlipHor.bmp");
 	metallic = loadTexture("textures/asteroid/Metalness180FlipHor.bmp");
-	roughness = loadTexture("textures/asteroid/Displacement180FlipHor.bmp");
-	ao = loadTexture("textures/asteroid/Emission180FlipHor.bmp");
+	roughness = loadTexture("textures/asteroid/Roughness.bmp");
+	ao = loadTexture("textures/asteroid/AO.bmp");
 	vec3 lightPosition = vec3(0.0f, 0.0f, 10.0f);
 	vec3 lightColor = vec3(150.0f, 150.0f, 150.0f);
 	lightPositions[0] = vec3(0.0f, 0.0f, 10.0f);
