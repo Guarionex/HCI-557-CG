@@ -3,6 +3,9 @@
 #include <GL/freeglut_std.h>
 
 using namespace cs557;
+FPSCamera::FPSCamera()
+{
+}
 
 FPSCamera::FPSCamera(vec3 eye, float pitch, float yaw)
 {

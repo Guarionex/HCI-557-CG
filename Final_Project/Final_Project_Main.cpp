@@ -29,6 +29,7 @@
 #include "ModelPlane.h"
 #include <GL/glut.h>
 #include "FPSCamera.h"
+#include "Skybox.h"
 
 using namespace std;
 using namespace cs557;
@@ -38,39 +39,42 @@ mat4 viewMatrix;
 mat4 modelMatrix;
 mat4 modelMatrixCoord;
 
-float eye_x = 0.0f;
-float eye_y = 0.0f;
-float eye_z = -4.0f;
+int const WIDTH = 1280;
+int const HEIGHT = 1024;
 
-int xOrigin = 1280 / 2;
-int yOrigin = 1024 / 2;
-
-FPSCamera camera = FPSCamera(vec3(eye_x, eye_y, eye_z), 0, 0);
-
+FPSCamera camera;
+SkyBox skyBox;
 CoordinateSystem coordinateSystem;
 
 int texture_program = -1;
+int skyBox_program = -1;
 
 Plane plane0;
 
-GLfloat clear_color[] = { 0.6f, 0.7f, 1.0f, 1.0f };
-static const GLfloat clear_depth[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+GLfloat const clear_color[] = { 0.6f, 0.7f, 1.0f, 1.0f };
+GLfloat const clear_depth[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-void Init(void)
+void Init()
 {
 	initGlew();
-	projectionMatrix = perspective(1.57f, (float)800 / (float)600, 0.1f, 100.f);
+	projectionMatrix = perspective(1.57f, (float)800 / (float)600, 0.1f, 200.f);
 	modelMatrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, 0.0f));
 	modelMatrixCoord = translate(mat4(1.0f), vec3(.0f, 0.0f, 0.0f));
 
 	coordinateSystem.create(2.5);
 
 	texture_program = LoadAndCreateShaderProgram("shaders/texture_program.vs", "shaders/texture_program.fs");
+	skyBox_program = LoadAndCreateShaderProgram("shaders/skybox.vs", "shaders/skybox.fs");
 
 	plane0.create(4.0, 4.0, texture_program);
+
+	camera = FPSCamera(vec3(0.0f, 0.0f, -4.0f), 0, 0);
+
+	skyBox = SkyBox("textures/leftImage.png", "textures/rightImage.png", "textures/upImage.png",
+	                "textures/downImage.png", "textures/frontImage.png", "textures/backImage.png", skyBox_program);
 }
 
-void Draw(void)
+void Draw()
 {
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -81,6 +85,7 @@ void Draw(void)
 	
 	coordinateSystem.draw(projectionMatrix, rotated_view, modelMatrixCoord);
 	plane0.draw(projectionMatrix, rotated_view, modelMatrix);
+	skyBox.Draw(projectionMatrix, rotated_view);
 
 	glutSwapBuffers();
 }
@@ -107,7 +112,7 @@ void mouse(int button, int state, int x, int y)
 
 void mouse_motion(int x, int y)
 {
-	camera.MouseMove(x, y, 1280, 1024);
+	camera.MouseMove(x, y, WIDTH, HEIGHT);
 	glutPostRedisplay();
 }
 
@@ -115,10 +120,10 @@ int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-	glutInitWindowSize(1280, 1024);
+	glutInitWindowSize(WIDTH, HEIGHT);
 	glutCreateWindow("CprE 557 Final Project");
 	Init();
-	glutWarpPointer(xOrigin, yOrigin);
+	glutWarpPointer(WIDTH / 2, HEIGHT / 2);
 	glutReshapeFunc(reshape);
 	glutDisplayFunc(Draw);
 	glutKeyboardFunc(keyboard);
