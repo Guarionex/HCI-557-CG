@@ -12,7 +12,7 @@ namespace cs557
 	class FPSCamera {
 
 	public:
-
+		FPSCamera();
 		FPSCamera(vec3 eye, float pitch, float yaw);
 		mat4 GetViewMatrix() const;
 		void KeyPressed(const unsigned char key);
