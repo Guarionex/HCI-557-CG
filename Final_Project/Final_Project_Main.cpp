@@ -74,6 +74,7 @@ unsigned int ao;
 Shader pbr_shader;
 vec3 lightPositions[4];
 vec3 lightColors[4];
+unsigned int cubeMapTexture;
 
 void Init()
 {
@@ -95,14 +96,15 @@ void Init()
 
 	skyBox = SkyBox("textures/leftImage.png", "textures/rightImage.png", "textures/upImage.png",
 	                "textures/downImage.png", "textures/frontImage.png", "textures/backImage.png", skyBox_program);
+	cubeMapTexture = skyBox.GetCubeMap();
 
 	pbr_shader.use();
-	pbr_shader.setInt("albedoMap", 0);
-	pbr_shader.setInt("normalMap", 1);
-	pbr_shader.setInt("metallicMap", 2);
-	pbr_shader.setInt("roughnessMap", 3);
-	pbr_shader.setInt("aoMap", 4);
-
+	pbr_shader.setInt("irradianceMap", 0);
+	pbr_shader.setInt("albedoMap", 1);
+	pbr_shader.setInt("normalMap", 2);
+	pbr_shader.setInt("metallicMap", 3);
+	pbr_shader.setInt("roughnessMap", 4);
+	pbr_shader.setInt("aoMap", 5);
 
 	//glUseProgram(normal_map_program);
 	albedo = loadTexture("textures/asteroid/Albedo180FlipHor.bmp");
@@ -113,7 +115,7 @@ void Init()
 	vec3 lightPosition = vec3(0.0f, 0.0f, 10.0f);
 	vec3 lightColor = vec3(150.0f, 150.0f, 150.0f);
 	lightPositions[0] = vec3(0.0f, 0.0f, 10.0f);
-	lightColors[0] = vec3(150.0f, 150.0f, 150.0f);
+	lightColors[0] = vec3(50.0f, 50.0f, 50.0f);
 
 	//int albedo_Location = glGetUniformLocation(pbr_program, "albedoMap");
 	//int normal_location = glGetUniformLocation(pbr_program, "normalMap");
@@ -136,19 +138,19 @@ void Init()
 		pbr_shader.setVec3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
 	}
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, albedo);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, normal);
+	glBindTexture(GL_TEXTURE_2D, albedo);
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, metallic);
+	glBindTexture(GL_TEXTURE_2D, normal);
 	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, roughness);
+	glBindTexture(GL_TEXTURE_2D, metallic);
 	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, roughness);
+	glActiveTexture(GL_TEXTURE5);
 	glBindTexture(GL_TEXTURE_2D, ao);
 
 	obj_model.create("models/asteroid/A7.obj", pbr_shader.ID);
-
+	obj_model.setCubeMapTexture(cubeMapTexture);
 	//unsigned int texture_id = -1;
 	//unsigned int texture_normal_id = -1;
 	//MultiLoadAndCreateTextures("textures/asteroid/Albedo.bmp", "textures/asteroid/Normal.bmp", &texture_id, &texture_normal_id);

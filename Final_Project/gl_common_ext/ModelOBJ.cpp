@@ -148,7 +148,7 @@ void cs557::OBJModel::draw(glm::mat4 projectionMatrix, glm::mat4 viewMatrix, glm
 
 	 // Bind the buffer and switch it to an active buffer
 	glBindVertexArray(vaoID[0]);
-
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap_texture);
 	// Draw the triangles
  	glDrawElements(GL_TRIANGLES, _N, GL_UNSIGNED_INT, 0);
 	
@@ -160,6 +160,11 @@ void cs557::OBJModel::draw(glm::mat4 projectionMatrix, glm::mat4 viewMatrix, glm
 	glUseProgram(0);
 
 
+}
+
+void cs557::OBJModel::setCubeMapTexture(unsigned int cubeMap)
+{
+	cubemap_texture = cubeMap;
 }
 
 
