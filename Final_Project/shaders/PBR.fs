@@ -10,6 +10,9 @@ uniform sampler2D normalMap;
 uniform sampler2D metallicMap;
 uniform sampler2D roughnessMap;
 uniform sampler2D aoMap;
+uniform sampler2D specularMap;    
+uniform sampler2D emissionMap;
+
 
 // IBL
 uniform samplerCube irradianceMap;
@@ -19,6 +22,8 @@ uniform vec3 lightPositions[4];
 uniform vec3 lightColors[4];
 
 uniform vec3 camPos;
+
+uniform int emissionGlow;
 
 const float PI = 3.14159265359;
 // ----------------------------------------------------------------------------
@@ -116,7 +121,7 @@ void main()
            
         vec3 nominator    = NDF * G * F; 
         float denominator = 4 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001; // 0.001 to prevent divide by zero.
-        vec3 specular = nominator / denominator;
+        vec3 specular = (nominator / denominator) * texture(specularMap, TexCoords).rgb;
         
         // kS is equal to Fresnel
         vec3 kS = F;
@@ -147,7 +152,10 @@ void main()
     vec3 diffuse = irradiance * albedo;
     vec3 ambient = (kD * diffuse) * ao;
     
-    vec3 color = ambient + Lo;
+	//Emissions
+	vec3 emission =  emissionGlow * texture(emissionMap, TexCoords).rgb;
+	
+    vec3 color = ambient + Lo + emission;
 
     // HDR tonemapping
     color = color / (color + vec3(1.0));

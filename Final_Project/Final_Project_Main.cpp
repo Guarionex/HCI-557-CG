@@ -71,10 +71,14 @@ unsigned int normal;
 unsigned int metallic;
 unsigned int roughness;
 unsigned int ao;
+unsigned int specular;
+unsigned int emission;
 Shader pbr_shader;
 vec3 lightPositions[4];
 vec3 lightColors[4];
 unsigned int cubeMapTexture;
+int emissionGlow = 1;
+bool isFading = false;
 
 void Init()
 {
@@ -88,7 +92,6 @@ void Init()
 	texture_program = LoadAndCreateShaderProgram("shaders/texture_program.vs", "shaders/texture_program.fs");
 	normal_map_program = LoadAndCreateShaderProgram("shaders/normal_map_program.vs", "shaders/normal_map_program.fs");
 	skyBox_program = LoadAndCreateShaderProgram("shaders/skybox.vs", "shaders/skybox.fs");
-	//pbr_program = LoadAndCreateShaderProgram("shaders/PBR.vs", "shaders/PBR.fs");
 	pbr_shader = Shader("shaders/PBR.vs", "shaders/PBR.fs");
 	//plane0.create(4.0, 4.0, texture_program);
 
@@ -105,38 +108,25 @@ void Init()
 	pbr_shader.setInt("metallicMap", 3);
 	pbr_shader.setInt("roughnessMap", 4);
 	pbr_shader.setInt("aoMap", 5);
+	pbr_shader.setInt("specularMap", 6);
+	pbr_shader.setInt("emissionMap", 7);
 
-	//glUseProgram(normal_map_program);
 	albedo = loadTexture("textures/asteroid/Albedo180FlipHor.bmp");
 	normal = loadTexture("textures/asteroid/Normal180FlipHor.bmp");
 	metallic = loadTexture("textures/asteroid/Metalness180FlipHor.bmp");
 	roughness = loadTexture("textures/asteroid/Roughness.bmp");
 	ao = loadTexture("textures/asteroid/AO.bmp");
-	vec3 lightPosition = vec3(0.0f, 0.0f, 10.0f);
-	vec3 lightColor = vec3(150.0f, 150.0f, 150.0f);
+	specular = loadTexture("textures/asteroid/Specular.bmp");
+	emission = loadTexture("textures/asteroid/Emission180FlipHor.bmp");
 	lightPositions[0] = vec3(0.0f, 0.0f, 10.0f);
 	lightColors[0] = vec3(50.0f, 50.0f, 50.0f);
-
-	//int albedo_Location = glGetUniformLocation(pbr_program, "albedoMap");
-	//int normal_location = glGetUniformLocation(pbr_program, "normalMap");
-	//int metallic_location = glGetUniformLocation(pbr_program, "metallicMap");
-	//int roughness_location = glGetUniformLocation(pbr_program, "roughnessMap");
-	//int ao_location = glGetUniformLocation(pbr_program, "aoMap");
-	//int lightPos_location = glGetUniformLocation(pbr_program, "lightPositions[0]");
-	//int lightColor_location = glGetUniformLocation(pbr_program, "lightColors[0]");
-	//glUniform1i(albedo_Location, 0);
-	//glUniform1i(normal_location, 1);
-	//glUniform1i(metallic_location, 2);
-	//glUniform1i(roughness_location, 3);
-	//glUniform1i(ao_location, 4);
-	//glUniform3fv(lightPos_location, 1, &lightPosition[0]);
-	//glUniform3fv(lightColor_location, 1, &lightColor[0]);
 
 	for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
 	{
 		pbr_shader.setVec3("lightPositions[" + std::to_string(i) + "]", lightPositions[i]);
 		pbr_shader.setVec3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
 	}
+	pbr_shader.setInt("emissionGlow", emissionGlow);
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, albedo);
@@ -148,19 +138,13 @@ void Init()
 	glBindTexture(GL_TEXTURE_2D, roughness);
 	glActiveTexture(GL_TEXTURE5);
 	glBindTexture(GL_TEXTURE_2D, ao);
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_2D, specular);
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, emission);
 
 	obj_model.create("models/asteroid/A7.obj", pbr_shader.ID);
 	obj_model.setCubeMapTexture(cubeMapTexture);
-	//unsigned int texture_id = -1;
-	//unsigned int texture_normal_id = -1;
-	//MultiLoadAndCreateTextures("textures/asteroid/Albedo.bmp", "textures/asteroid/Normal.bmp", &texture_id, &texture_normal_id);
-	//int texture_location = glGetUniformLocation(normal_map_program, "tex");
-	//int texture_normal_location = glGetUniformLocation(normal_map_program, "tex_normalmap");
-	//glUniform1i(texture_location, 0);
-	//glUniform1i(texture_normal_location, 1);
-
-	//glUniform1i(glGetUniformLocation(normal_map_program, "use_normalmap"), use_normalmap);
-	//glUniform1i(glGetUniformLocation(normal_map_program, "mode"), mode);
 }
 
 void Draw()
@@ -192,30 +176,22 @@ void keyboard(unsigned char key, int x, int y)
 
 	if (key == 'r')
 	{
-		mode = 0;
-
-		glUseProgram(normal_map_program);
-		glUniform1i(glGetUniformLocation(normal_map_program, "mode"), mode);
-		glUseProgram(0);
+		emissionGlow = 0;
+		pbr_shader.use();
+		pbr_shader.setInt("emissionGlow", emissionGlow);
 
 	}
 	else if (key == 'm')
 	{
-		mode += 1;
-		if (mode > 5) mode = 0;
-
-		glUseProgram(normal_map_program);
-		glUniform1i(glGetUniformLocation(normal_map_program, "mode"), mode);
-		glUseProgram(0);
+		emissionGlow += 1;
+		pbr_shader.use();
+		pbr_shader.setInt("emissionGlow", emissionGlow);
 	}
 	else if (key == 'n')
 	{
-		if (use_normalmap == 1) use_normalmap = 0;
-		else use_normalmap = 1;
-
-		glUseProgram(normal_map_program);
-		glUniform1i(glGetUniformLocation(normal_map_program, "use_normalmap"), use_normalmap);
-		glUseProgram(0);
+		emissionGlow -= 1;
+		pbr_shader.use();
+		pbr_shader.setInt("emissionGlow", emissionGlow);
 	}
 
 	glutPostRedisplay();
@@ -277,102 +253,36 @@ unsigned int loadTexture(char const * path)
 	return textureID;
 }
 
-//bool MultiLoadAndCreateTextures(string path_and_file_texture_1, string path_and_file_texture_2,
-//	unsigned int* dst_texture_id, unsigned int* dst_texture_id2)
-//{
-//
-//	int channels1;
-//	int width1;
-//	int height1;
-//
-//	int channels2;
-//	int width2;
-//	int height2;
-//
-//	unsigned char* data1;
-//	unsigned char* data2;
-//
-//	LoadBMPFromFile(path_and_file_texture_1, &width1, &height1, &channels1, &data1);
-//	LoadBMPFromFile(path_and_file_texture_2, &width2, &height2, &channels2, &data2);
-//
-//	if (data1 == NULL || data2 == NULL)return false;
-//
-//
-//	//**********************************************************************************************
-//	// Texture generation - background
-//
-//	// Activate a texture unit
-//	glActiveTexture(GL_TEXTURE0);
-//
-//	// Generate a texture, this function allocates the memory and
-//	// associates the texture with a variable.
-//	glGenTextures(1, dst_texture_id);
-//
-//	// Set a texture as active texture.
-//	glBindTexture(GL_TEXTURE_2D, *dst_texture_id);
-//
-//	// Change the parameters of your texture units.
-//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-//
-//
-//	// Create a texture and load it to your graphics hardware. This texture is automatically associated
-//	// with texture 0 and the textuer variable "texture" / the active texture.
-//	if (channels1 == 3)
-//		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1, height1, 0, GL_BGR, GL_UNSIGNED_BYTE, data1);
-//	else if (channels1 == 4)
-//		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width1, height1, 0, GL_BGRA, GL_UNSIGNED_BYTE, data1);
-//
-//	//**********************************************************************************************
-//	// Create a midmap texture pyramid and load it to the graphics hardware.
-//	// Note, the MIN and MAG filter must be set to one of the available midmap filters.
-//	//gluBuild2DMipmaps( GL_TEXTURE_2D, 3, width, height,GL_RGB, GL_UNSIGNED_BYTE, data );
-//
-//	// Delete your loaded data
-//	free(data1);
-//
-//
-//
-//
-//	//**********************************************************************************************
-//	// Texture light
-//
-//	// Activate a texture unit
-//	glActiveTexture(GL_TEXTURE1);
-//
-//	// Generate a texture, this function allocates the memory and
-//	// associates the texture with a variable.
-//	glGenTextures(1, dst_texture_id2);
-//
-//	// Set a texture as active texture.
-//	glBindTexture(GL_TEXTURE_2D, *dst_texture_id2);
-//
-//	// Change the parameters of your texture units.
-//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-//
-//
-//	// Create a texture and load it to your graphics hardware. This texture is automatically associated
-//	// with texture 0 and the textuer variable "texture" / the active texture.
-//	if (channels2 == 3)
-//		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width2, height2, 0, GL_BGR, GL_UNSIGNED_BYTE, data2);
-//	else if (channels2 == 4)
-//		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width2, height2, 0, GL_BGRA, GL_UNSIGNED_BYTE, data2);
-//
-//	//**********************************************************************************************
-//	// Create a midmap texture pyramid and load it to the graphics hardware.
-//	// Note, the MIN and MAG filter must be set to one of the available midmap filters.
-//	//gluBuild2DMipmaps( GL_TEXTURE_2D, 3, width, height,GL_RGB, GL_UNSIGNED_BYTE, data );
-//
-//	// Delete your loaded data
-//	free(data2);
-//
-//	return true;
-//}
+void animateEmissionGlow(int value)
+{
+	int glowIncrement = 0;
+	if(isFading)
+	{
+		glowIncrement = -1;
+	}
+	else
+	{
+		glowIncrement = 1;
+	}
+
+	emissionGlow += glowIncrement;
+	pbr_shader.use();
+	pbr_shader.setInt("emissionGlow", emissionGlow);
+
+	int callBackTime = 100;
+	if(emissionGlow >= 25)
+	{
+		isFading = true;
+		callBackTime = 100;
+	}
+	else if(emissionGlow <= 0)
+	{
+		isFading = false;
+		callBackTime = 1000;
+	}
+	glutPostRedisplay();
+	glutTimerFunc(callBackTime, animateEmissionGlow, 100);
+}
 
 int main(int argc, char** argv)
 {
@@ -387,6 +297,7 @@ int main(int argc, char** argv)
 	glutKeyboardFunc(keyboard);
 	glutMouseFunc(mouse);
 	glutMotionFunc(mouse_motion);
+	glutTimerFunc(100, animateEmissionGlow, 1000);
 	glutMainLoop();
 	return 1;
 }
