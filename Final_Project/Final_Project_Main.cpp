@@ -271,7 +271,7 @@ void animateEmissionGlow(int value)
 	pbr_shader.use();
 	pbr_shader.setInt("emissionGlow", emissionGlow);
 
-	int callBackTime = 100;
+	int callBackTime = value;
 	if(emissionGlow >= 25)
 	{
 		isFading = true;
