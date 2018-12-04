@@ -87,7 +87,7 @@ void Init()
 	modelMatrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, 0.0f));
 	modelMatrixCoord = translate(mat4(1.0f), vec3(.0f, 0.0f, 0.0f));
 
-	coordinateSystem.create(2.5);
+	//coordinateSystem.create(2.5);
 
 	texture_program = LoadAndCreateShaderProgram("shaders/texture_program.vs", "shaders/texture_program.fs");
 	normal_map_program = LoadAndCreateShaderProgram("shaders/normal_map_program.vs", "shaders/normal_map_program.fs");
@@ -159,7 +159,7 @@ void Draw()
 
 	mat4 rotated_view = camera.GetViewMatrix();
 	
-	coordinateSystem.draw(projectionMatrix, rotated_view, modelMatrixCoord);
+	//coordinateSystem.draw(projectionMatrix, rotated_view, modelMatrixCoord);
 	//plane0.draw(projectionMatrix, rotated_view, modelMatrix);
 
 	pbr_shader.use();
@@ -202,9 +202,12 @@ void keyboard(unsigned char key, int x, int y)
 void reshape(int w, int h)
 {
 	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(75, (GLfloat)w / (GLfloat)h, 0.10, 100.0);
+	//glMatrixMode(GL_PROJECTION);
+	//glLoadIdentity();
+	//gluPerspective(75, (GLfloat)w / (GLfloat)h, 0.10, 100.0);
+	float aspect_ratio = (float)w / (float)h;
+	float fovy = 1.57f / aspect_ratio;
+	projectionMatrix = perspective(fovy, (float)w / (float)h, 0.1f, 200.f);
 }
 
 void mouse(int button, int state, int x, int y)
