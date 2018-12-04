@@ -119,7 +119,9 @@ void Init()
 	specular = loadTexture("textures/asteroid/Specular.bmp");
 	emission = loadTexture("textures/asteroid/Emission180FlipHor.bmp");
 	lightPositions[0] = vec3(0.0f, 0.0f, 10.0f);
-	lightColors[0] = vec3(50.0f, 50.0f, 50.0f);
+	lightColors[0] = vec3(75.0f, 75.0f, 75.0f);
+	lightPositions[1] = vec3(2.0f, 0.0f, 4.0f);
+	lightColors[1] = vec3(25.0f, 0.0f, 0.0f);
 
 	for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
 	{
