@@ -283,7 +283,15 @@ void animateEmissionGlow(int value)
 		callBackTime = 1000;
 	}
 	glutPostRedisplay();
-	glutTimerFunc(callBackTime, animateEmissionGlow, 100);
+	glutTimerFunc(callBackTime, animateEmissionGlow, value);
+}
+
+void animateAsteroid(int value)
+{
+	modelMatrix = rotate(modelMatrix, 0.005f, vec3(-1.0, 1.0, 1.0));
+
+	glutPostRedisplay();
+	glutTimerFunc(value, animateAsteroid, value);
 }
 
 int main(int argc, char** argv)
@@ -299,7 +307,8 @@ int main(int argc, char** argv)
 	glutKeyboardFunc(keyboard);
 	glutMouseFunc(mouse);
 	glutMotionFunc(mouse_motion);
-	glutTimerFunc(100, animateEmissionGlow, 1000);
+	glutTimerFunc(100, animateEmissionGlow, 100);
+	glutTimerFunc(100, animateAsteroid, 100);
 	glutMainLoop();
 	return 1;
 }
