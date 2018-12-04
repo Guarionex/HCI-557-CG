@@ -14,6 +14,7 @@ namespace cs557
 		SkyBox();
 		SkyBox(string left, string right, string up, string down, string front, string back, int shader_program);
 		void Draw(glm::mat4 projectionMatrix, glm::mat4 viewMatrix);
+		unsigned int GetCubeMap() const;
 
 	private:
 		unsigned int cubemapTexture;

@@ -27,7 +27,7 @@ void FPSCamera::UpdateView()
 	mat4 rotation = matPitch * matYaw;
 
 	mat4 translation = mat4(1.0f);
-	translation = translate(translation, _eye);
+	translation = translate(translation, -_eye);
 
 	viewMatrix = rotation * translation;
 }
@@ -66,7 +66,7 @@ void FPSCamera::KeyPressed(const unsigned char key)
 
 	const float speed = 0.12f;
 
-	_eye += (dz * forward + -dx * strafe) * speed;
+	_eye += (-dz * forward + dx * strafe) * speed;
 
 	UpdateView();
 }
@@ -101,4 +101,9 @@ void FPSCamera::MousePressed(int button, int state, int x, int y)
 		mousePosition.x = x;
 		mousePosition.y = y;
 	}
+}
+
+vec3 FPSCamera::GetPosition() const
+{
+	return _eye;
 }

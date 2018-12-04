@@ -45,6 +45,7 @@ namespace cs557
 		@param modelMatrix - a model matrix object.
 		*/
 		void draw(glm::mat4 projectionMatrix, glm::mat4 viewMatrix, glm::mat4 modelMatrix);
+		void setCubeMapTexture(unsigned int cubeMap);
 
 
 	private:
@@ -60,6 +61,7 @@ namespace cs557
 		int modelMatrixLocation;
 		int projMatrixLocation;
 
+		unsigned int cubemap_texture;
 	
 		int _N; // number of vertices
 		int _I; // number indices

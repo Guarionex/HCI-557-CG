@@ -124,6 +124,7 @@ void SkyBox::Draw(mat4 projectionMatrix, mat4 viewMatrix)
 	glUseProgram(skyBox_program);
 
 	mat4 skyBoxView = mat4(mat3(viewMatrix));
+	glUniform1i(glGetUniformLocation(skyBox_program, "skybox"), 0);
 	glUniformMatrix4fv(skyBoxViewMatrixLocation, 1, GL_FALSE, &skyBoxView[0][0]);
 	glUniformMatrix4fv(skyBoxProjMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
 
@@ -134,4 +135,9 @@ void SkyBox::Draw(mat4 projectionMatrix, mat4 viewMatrix)
 	glBindVertexArray(0);
 	glUseProgram(0);
 	glDepthFunc(GL_LESS);
+}
+
+unsigned SkyBox::GetCubeMap() const
+{
+	return cubemapTexture;
 }
