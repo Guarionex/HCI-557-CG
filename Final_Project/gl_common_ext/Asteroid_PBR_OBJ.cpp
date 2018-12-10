@@ -8,9 +8,9 @@ Asteroid_PBR_OBJ::Asteroid_PBR_OBJ()
 {
 }
 
-Asteroid_PBR_OBJ::Asteroid_PBR_OBJ(std::string obj_path, TextureMaps textures, Lights lights, std::string pbr_vs, std::string pbr_fs, InitialTransform initial_transform)
+Asteroid_PBR_OBJ::Asteroid_PBR_OBJ(std::string obj_path, TextureMaps textures, Lights lights, ShaderFiles pbr_shader_files, InitialTransform initial_transform)
 {
-	pbr_shader = Shader(pbr_vs.c_str(), pbr_fs.c_str());
+	pbr_shader = Shader(pbr_shader_files.vertex_shader.c_str(), pbr_shader_files.fragment_shader.c_str());
 	emissionGlow = 1;
 	original_transform = initial_transform;
 	model_matrix = translate(mat4(1.0f), original_transform.position);

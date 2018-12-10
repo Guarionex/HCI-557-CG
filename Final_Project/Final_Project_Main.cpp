@@ -33,6 +33,7 @@
 #include "Skybox.h"
 #include "Asteroid_PBR_OBJ.h"
 #include "InitialTransform.h"
+#include "ShaderFiles.h"
 
 using namespace std;
 using namespace cs557;
@@ -94,7 +95,13 @@ void Init()
 		vec3(1.0f, 1.0f, 1.0f)
 	};
 
-	asteroid = Asteroid_PBR_OBJ("models/asteroid/A7.obj", textures, lights, "shaders/PBR.vs", "shaders/PBR.fs", initial_transform);
+	ShaderFiles pbr_shader
+	{
+		"shaders/PBR.vs",
+		"shaders/PBR.fs"
+	};
+
+	asteroid = Asteroid_PBR_OBJ("models/asteroid/A7.obj", textures, lights, pbr_shader, initial_transform);
 }
 
 void Draw()
