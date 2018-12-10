@@ -12,18 +12,18 @@ Asteroid_PBR_OBJ::Asteroid_PBR_OBJ(std::string obj_path, TextureMaps textures, L
 {
 	pbr_shader = Shader(pbr_vs.c_str(), pbr_fs.c_str());
 	emissionGlow = 1;
+	model_matrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, 0.0f));
 	isFading = false;
 	Setup_PBR_Shader(textures, lights);
 	obj_model.create(obj_path, pbr_shader.ID);
 	obj_model.setCubeMapTexture(textures.IrradianceTexture);
 }
 
-void Asteroid_PBR_OBJ::Draw(mat4 projectionMatrix, mat4 modelMatrix, FPSCamera camera)
+void Asteroid_PBR_OBJ::Draw(mat4 projectionMatrix, FPSCamera camera)
 {
-	model_matrix = modelMatrix;
 	pbr_shader.use();
 	pbr_shader.setVec3("camPos", camera.GetPosition());
-	obj_model.draw(projectionMatrix, camera.GetViewMatrix(), modelMatrix);
+	obj_model.draw(projectionMatrix, camera.GetViewMatrix(), model_matrix);
 }
 
 void Asteroid_PBR_OBJ::animateAsteroid(int value)
@@ -139,4 +139,11 @@ unsigned int Asteroid_PBR_OBJ::loadTexture(char const * path)
 
 		stbi_image_free(data);
 	}
+	else
+	{
+		std::cout << "Texture failed to load at path: " << path << std::endl;
+		stbi_image_free(data);
+	}
+
+	return textureID;
 }
