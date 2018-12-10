@@ -50,6 +50,7 @@ SkyBox skyBox;
 int skyBox_program = -1;
 
 Asteroid_PBR_OBJ asteroid;
+Asteroid_PBR_OBJ asteroid2;
 
 void Init()
 {
@@ -95,6 +96,13 @@ void Init()
 		vec3(1.0f, 1.0f, 1.0f)
 	};
 
+	InitialTransform initial_transform2
+	{
+		vec3(10.0f, 0.0f, 0.0f),
+		vec3(1.0, -1.0, -1.0),
+		vec3(1.0f, 1.0f, 1.0f)
+	};
+
 	ShaderFiles pbr_shader
 	{
 		"shaders/PBR.vs",
@@ -102,6 +110,7 @@ void Init()
 	};
 
 	asteroid = Asteroid_PBR_OBJ("models/asteroid/A7.obj", textures, lights, pbr_shader, initial_transform);
+	asteroid2 = Asteroid_PBR_OBJ("models/asteroid/A7.obj", textures, lights, pbr_shader, initial_transform2);
 }
 
 void Draw()
@@ -115,6 +124,7 @@ void Draw()
 	mat4 rotated_view = camera.GetViewMatrix();
 
 	asteroid.Draw(projectionMatrix, camera);
+	asteroid2.Draw(projectionMatrix, camera);
 	
 	skyBox.Draw(projectionMatrix, rotated_view);
 
@@ -150,6 +160,8 @@ void mouse_motion(int x, int y)
 void animateEmissionGlow(int value)
 {
 	int callBackTime = asteroid.animateEmissionGlow(value);
+	asteroid2.animateEmissionGlow(value);
+
 	glutPostRedisplay();
 	glutTimerFunc(callBackTime, animateEmissionGlow, value);
 }
@@ -157,6 +169,7 @@ void animateEmissionGlow(int value)
 void animateAsteroid(int value)
 {
 	asteroid.animateAsteroid(value);
+	asteroid2.animateAsteroid(value * 10);
 
 	glutPostRedisplay();
 	glutTimerFunc(value, animateAsteroid, value);
@@ -176,7 +189,7 @@ int main(int argc, char** argv)
 	glutMouseFunc(mouse);
 	glutMotionFunc(mouse_motion);
 	glutTimerFunc(100, animateEmissionGlow, 100);
-	glutTimerFunc(100, animateAsteroid, 100);
+	glutTimerFunc(100, animateAsteroid, 1);
 	glutMainLoop();
 	return 1;
 }

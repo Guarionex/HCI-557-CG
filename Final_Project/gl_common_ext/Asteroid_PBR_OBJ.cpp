@@ -30,7 +30,7 @@ void Asteroid_PBR_OBJ::Draw(mat4 projectionMatrix, FPSCamera camera)
 
 void Asteroid_PBR_OBJ::animateAsteroid(int value)
 {
-	model_matrix = rotate(model_matrix, 0.005f, original_transform.rotation);
+	model_matrix = rotate(model_matrix, 0.005f * value, original_transform.rotation);
 }
 
 int Asteroid_PBR_OBJ::animateEmissionGlow(int value)
