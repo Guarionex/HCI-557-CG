@@ -51,6 +51,9 @@ int skyBox_program = -1;
 
 Asteroid_PBR_OBJ asteroid;
 Asteroid_PBR_OBJ asteroid2;
+Asteroid_PBR_OBJ asteroid3;
+Asteroid_PBR_OBJ asteroid4;
+Asteroid_PBR_OBJ asteroid5;
 
 void Init()
 {
@@ -103,6 +106,27 @@ void Init()
 		vec3(1.0f, 1.0f, 1.0f)
 	};
 
+	InitialTransform initial_transform3
+	{
+		vec3(3.0f, 4.0f, 14.0f),
+		vec3(1.0, -1.0, -1.0),
+		vec3(1.0f, 1.0f, 1.0f)
+	};
+	
+	InitialTransform initial_transform4
+	{
+		vec3(20.0f, 4.0f, -13.0f),
+		vec3(1.0, -1.0, -1.0),
+		vec3(1.0f, 1.0f, 1.0f)
+	};
+
+	InitialTransform initial_transform5
+	{
+		vec3(-16.0f, 7.0f, 0.0f),
+		vec3(1.0, -1.0, -1.0),
+		vec3(1.0f, 1.0f, 1.0f)
+	};
+
 	ShaderFiles pbr_shader
 	{
 		"shaders/PBR.vs",
@@ -111,6 +135,9 @@ void Init()
 
 	asteroid = Asteroid_PBR_OBJ("models/asteroid/A7.obj", textures, lights, pbr_shader, initial_transform);
 	asteroid2 = Asteroid_PBR_OBJ("models/asteroid/A7.obj", textures, lights, pbr_shader, initial_transform2);
+	asteroid3 = Asteroid_PBR_OBJ("models/asteroid/A7.obj", textures, lights, pbr_shader, initial_transform3);
+	asteroid4 = Asteroid_PBR_OBJ("models/asteroid/A7.obj", textures, lights, pbr_shader, initial_transform4);
+	asteroid5 = Asteroid_PBR_OBJ("models/asteroid/A7.obj", textures, lights, pbr_shader, initial_transform5);
 }
 
 void Draw()
@@ -125,6 +152,9 @@ void Draw()
 
 	asteroid.Draw(projectionMatrix, camera);
 	asteroid2.Draw(projectionMatrix, camera);
+	asteroid3.Draw(projectionMatrix, camera);
+	asteroid4.Draw(projectionMatrix, camera);
+	asteroid5.Draw(projectionMatrix, camera);
 	
 	skyBox.Draw(projectionMatrix, rotated_view);
 
@@ -161,6 +191,9 @@ void animateEmissionGlow(int value)
 {
 	int callBackTime = asteroid.animateEmissionGlow(value);
 	asteroid2.animateEmissionGlow(value);
+	asteroid3.animateEmissionGlow(value);
+	asteroid4.animateEmissionGlow(value);
+	asteroid5.animateEmissionGlow(value);
 
 	glutPostRedisplay();
 	glutTimerFunc(callBackTime, animateEmissionGlow, value);
@@ -170,6 +203,9 @@ void animateAsteroid(int value)
 {
 	asteroid.animateAsteroid(value);
 	asteroid2.animateAsteroid(value * 10);
+	asteroid3.animateAsteroid(value * 2);
+	asteroid4.animateAsteroid(value * 4);
+	asteroid5.animateAsteroid(value * 6);
 
 	glutPostRedisplay();
 	glutTimerFunc(value, animateAsteroid, value);
