@@ -5,6 +5,7 @@
 #include "Lights.h"
 #include "ModelOBJ.h"
 #include "FPSCamera.h"
+#include "InitialTransform.h"
 
 namespace cs557 {
 
@@ -12,7 +13,7 @@ namespace cs557 {
 	{
 	public:
 		Asteroid_PBR_OBJ();
-		Asteroid_PBR_OBJ(std::string obj_path, TextureMaps textures, Lights lights, std::string pbr_vs, std::string pbr_fs);
+		Asteroid_PBR_OBJ(std::string obj_path, TextureMaps textures, Lights lights, std::string pbr_vs, std::string pbr_fs, InitialTransform initial_transform);
 		void Draw(mat4 projectionMatrix, FPSCamera camera);
 		void animateAsteroid(int value);
 		int animateEmissionGlow(int value);
@@ -22,6 +23,7 @@ namespace cs557 {
 		Shader pbr_shader;
 		int emissionGlow;
 		OBJModel obj_model;
+		InitialTransform original_transform;
 		mat4 model_matrix;
 		bool isFading;
 		void Setup_PBR_Shader(TextureMaps textures, Lights lights);

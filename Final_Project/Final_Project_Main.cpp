@@ -32,6 +32,7 @@
 #include "FPSCamera.h"
 #include "Skybox.h"
 #include "Asteroid_PBR_OBJ.h"
+#include "InitialTransform.h"
 
 using namespace std;
 using namespace cs557;
@@ -86,7 +87,14 @@ void Init()
 		}
 	};
 
-	asteroid = Asteroid_PBR_OBJ("models/asteroid/A7.obj", textures, lights, "shaders/PBR.vs", "shaders/PBR.fs");
+	InitialTransform initial_transform
+	{
+		vec3(0.0f, 0.0f, 0.0f),
+		vec3(-1.0, 1.0, 1.0),
+		vec3(1.0f, 1.0f, 1.0f)
+	};
+
+	asteroid = Asteroid_PBR_OBJ("models/asteroid/A7.obj", textures, lights, "shaders/PBR.vs", "shaders/PBR.fs", initial_transform);
 }
 
 void Draw()

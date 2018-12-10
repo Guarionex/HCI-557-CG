@@ -8,11 +8,13 @@ Asteroid_PBR_OBJ::Asteroid_PBR_OBJ()
 {
 }
 
-Asteroid_PBR_OBJ::Asteroid_PBR_OBJ(std::string obj_path, TextureMaps textures, Lights lights, std::string pbr_vs, std::string pbr_fs)
+Asteroid_PBR_OBJ::Asteroid_PBR_OBJ(std::string obj_path, TextureMaps textures, Lights lights, std::string pbr_vs, std::string pbr_fs, InitialTransform initial_transform)
 {
 	pbr_shader = Shader(pbr_vs.c_str(), pbr_fs.c_str());
 	emissionGlow = 1;
-	model_matrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, 0.0f));
+	original_transform = initial_transform;
+	model_matrix = translate(mat4(1.0f), original_transform.position);
+	model_matrix = scale(model_matrix, original_transform.scale);
 	isFading = false;
 	Setup_PBR_Shader(textures, lights);
 	obj_model.create(obj_path, pbr_shader.ID);
@@ -28,7 +30,7 @@ void Asteroid_PBR_OBJ::Draw(mat4 projectionMatrix, FPSCamera camera)
 
 void Asteroid_PBR_OBJ::animateAsteroid(int value)
 {
-	model_matrix = rotate(model_matrix, 0.005f, vec3(-1.0, 1.0, 1.0));
+	model_matrix = rotate(model_matrix, 0.005f, original_transform.rotation);
 }
 
 int Asteroid_PBR_OBJ::animateEmissionGlow(int value)
