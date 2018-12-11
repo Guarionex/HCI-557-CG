@@ -15,7 +15,7 @@ namespace cs557
 		FPSCamera();
 		FPSCamera(vec3 eye, float pitch, float yaw);
 		mat4 GetViewMatrix() const;
-		void KeyPressed(const unsigned char key);
+		void KeyPressed(bool* keyStates);
 		void MouseMove(int x, int y, int width, int height);
 		void MousePressed(int button, int state, int x, int y);
 		vec3 GetPosition() const;
@@ -25,7 +25,8 @@ namespace cs557
 		vec3 _eye;
 		float _pitch;
 		float _yaw;
-		bool isMousePressed;
+		bool isLeftMousePressed;
+		bool isRightMousePressed;
 		vec2 mousePosition;
 		void UpdateView();
 	};

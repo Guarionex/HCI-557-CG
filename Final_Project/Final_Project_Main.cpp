@@ -43,6 +43,7 @@ mat4 viewMatrix;
 
 int const WIDTH = 1280;
 int const HEIGHT = 1024;
+bool* keyStates;
 
 FPSCamera camera;
 SkyBox skyBox;
@@ -59,6 +60,12 @@ void Init()
 {
 	initGlew();
 	projectionMatrix = perspective(1.57f, (float)800 / (float)600, 0.1f, 200.f);
+
+	keyStates = new bool[256];
+	for (int i = 0; i < 256; i++)
+	{
+		keyStates[i] = false;
+	}
 
 	skyBox_program = LoadAndCreateShaderProgram("shaders/skybox.vs", "shaders/skybox.fs");
 
@@ -163,9 +170,14 @@ void Draw()
 
 void keyboard(unsigned char key, int x, int y)
 {
-	camera.KeyPressed(key);
-	
+	keyStates[key] = true;
+	camera.KeyPressed(keyStates);
 	glutPostRedisplay();
+}
+
+void keyboardUp(unsigned char key, int x, int y)
+{
+	keyStates[key] = false;
 }
 
 void reshape(int w, int h)
@@ -222,6 +234,7 @@ int main(int argc, char** argv)
 	glutReshapeFunc(reshape);
 	glutDisplayFunc(Draw);
 	glutKeyboardFunc(keyboard);
+	glutKeyboardUpFunc(keyboardUp);
 	glutMouseFunc(mouse);
 	glutMotionFunc(mouse_motion);
 	glutTimerFunc(100, animateEmissionGlow, 100);

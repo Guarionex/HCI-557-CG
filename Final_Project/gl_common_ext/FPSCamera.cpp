@@ -12,7 +12,8 @@ FPSCamera::FPSCamera(vec3 eye, float pitch, float yaw)
 	_eye = eye;
 	_pitch = pitch;
 	_yaw = yaw;
-	isMousePressed = false;
+	isLeftMousePressed = false;
+	isRightMousePressed = false;
 	UpdateView();
 }
 
@@ -37,26 +38,27 @@ mat4 FPSCamera::GetViewMatrix() const
 	return viewMatrix;
 }
 
-void FPSCamera::KeyPressed(const unsigned char key)
+void FPSCamera::KeyPressed(bool* keyStates)
 {
 	float dx = 0;
 	float dz = 0;
-	switch (key)
+
+	if(keyStates['w'] && !keyStates['s'])
 	{
-		case 'w':
-			dz = 2;
-			break;
-		case 's':
-			dz = -2;
-			break;
-		case 'a':
-			dx = -2;
-			break;
-		case 'd':
-			dx = 2;
-			break;
-		default:
-			break;
+		dz = 2;
+	}
+	else if(keyStates['s'] && !keyStates['w'])
+	{
+		dz = -2;
+	}
+
+	if(keyStates['a'] && !keyStates['d'])
+	{
+		dx = -2;
+	}
+	else if(keyStates['d'] && !keyStates['a'])
+	{
+		dx = 2;
 	}
 
 	mat4 mat = GetViewMatrix();
@@ -73,7 +75,7 @@ void FPSCamera::KeyPressed(const unsigned char key)
 
 void FPSCamera::MouseMove(int x, int y, int width, int height)
 {
-	if (isMousePressed)
+	if (isLeftMousePressed)
 	{
 
 		vec2 mouse_delta = vec2(x, y) - mousePosition;
@@ -88,16 +90,50 @@ void FPSCamera::MouseMove(int x, int y, int width, int height)
 
 		UpdateView();
 	}
+	else if(isRightMousePressed)
+	{
+		vec2 mouse_delta = vec2(x, y) - mousePosition;
+
+		const float mouseX_Sensitivity = 0.01f;
+		const float mouseY_Sensitivity = 0.01f;
+
+		float horizontalDrag = mouseX_Sensitivity * mouse_delta.x;
+		float verticalDrag = mouseY_Sensitivity * mouse_delta.y;
+
+		mousePosition = vec2(x, y);
+
+		mat4 mat = GetViewMatrix();
+
+		vec3 strafe(mat[0][0], mat[1][0], mat[2][0]);
+		vec3 vert(mat[0][1], mat[1][1], mat[2][1]);
+
+		const float speed = 0.24f;
+
+		_eye += (-horizontalDrag * strafe + verticalDrag * vert) * speed;
+
+		UpdateView();
+	}
 }
 void FPSCamera::MousePressed(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
 	{
-		isMousePressed = false;
+		isLeftMousePressed = false;
 	}
 	else if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 	{
-		isMousePressed = true;
+		isLeftMousePressed = true;
+		mousePosition.x = x;
+		mousePosition.y = y;
+	}
+
+	if (button == GLUT_RIGHT_BUTTON && state == GLUT_UP)
+	{
+		isRightMousePressed = false;
+	}
+	else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
+	{
+		isRightMousePressed = true;
 		mousePosition.x = x;
 		mousePosition.y = y;
 	}
