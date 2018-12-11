@@ -99,46 +99,17 @@ void Init()
 		}
 	};
 
-	InitialTransform initial_transform
-	{
-		vec3(0.0f, 0.0f, 0.0f),
-		vec3(-1.0, 1.0, 1.0),
-		vec3(1.0f, 1.0f, 1.0f)
-	};
+	InitialTransform initial_transform {vec3(0.0f, 0.0f, 0.0f), vec3(-1.0, 1.0, 1.0), vec3(1.0f, 1.0f, 1.0f)};
 
-	InitialTransform initial_transform2
-	{
-		vec3(10.0f, 0.0f, 0.0f),
-		vec3(1.0, -1.0, -1.0),
-		vec3(2.0f, 2.0f, 2.0f)
-	};
+	InitialTransform initial_transform2 {vec3(10.0f, 0.0f, 0.0f), vec3(1.0, -1.0, -1.0), vec3(2.0f, 2.0f, 2.0f)};
 
-	InitialTransform initial_transform3
-	{
-		vec3(3.0f, 4.0f, 14.0f),
-		vec3(-1.0, 1.0, 0.0),
-		vec3(3.0f, 3.0f, 3.0f)
-	};
+	InitialTransform initial_transform3	{vec3(3.0f, 4.0f, 14.0f), vec3(-1.0, 1.0, 0.0), vec3(3.0f, 3.0f, 3.0f)};
 	
-	InitialTransform initial_transform4
-	{
-		vec3(20.0f, 4.0f, -13.0f),
-		vec3(-1.0, 1.0, -1.0),
-		vec3(4.0f, 4.0f, 4.0f)
-	};
+	InitialTransform initial_transform4 {vec3(20.0f, 4.0f, -13.0f), vec3(-1.0, 1.0, -1.0), vec3(4.0f, 4.0f, 4.0f)};
 
-	InitialTransform initial_transform5
-	{
-		vec3(-16.0f, 7.0f, 0.0f),
-		vec3(1.0, -1.0, 1.0),
-		vec3(5.0f, 5.0f, 5.0f)
-	};
+	InitialTransform initial_transform5 {vec3(-16.0f, 7.0f, 0.0f), vec3(1.0, -1.0, 1.0), vec3(5.0f, 5.0f, 5.0f)};
 
-	ShaderFiles pbr_shader
-	{
-		"shaders/PBR.vs",
-		"shaders/PBR.fs"
-	};
+	ShaderFiles pbr_shader {"shaders/PBR.vs", "shaders/PBR.fs"};
 
 	asteroid = Asteroid_PBR_OBJ("models/asteroid/A7.obj", textures, lights, pbr_shader, initial_transform);
 	asteroid2 = Asteroid_PBR_OBJ("models/asteroid/A7.obj", textures, lights, pbr_shader, initial_transform2);
