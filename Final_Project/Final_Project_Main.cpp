@@ -57,7 +57,6 @@ Asteroid_PBR_OBJ asteroid4;
 Asteroid_PBR_OBJ asteroid5;
 
 Lights lights;
-float delta_angle;
 float const PI = 3.14159f;
 int const ONE_SECOND_IN_MILLISECOND = 1000;
 
@@ -94,20 +93,12 @@ void Init()
 
 	lights = Lights
 	{
-		{
-			vec3(0.0f, 0.0f, 10.0f)
-			//vec3(2.0f, 0.0f, 4.0f)
-		},
-		{
-			vec3(75.0f, 75.0f, 75.0f)
-			//vec3(25.0f, 0.0f, 0.0f)
-		},
-		{ 10 },
-		{ 8 },
-		{ 1.570796326794896619231321691639751442098584699687552910487f }
+		{ vec3(0.0f, 0.0f, 10.0f), vec3(2.0f, 0.0f, 4.0f) },
+		{ vec3(75.0f, 75.0f, 75.0f), vec3(25.0f, 0.0f, 0.0f) },
+		{ 10.0f,  4.47213595f},
+		{ 8.0f, 8.0f },
+		{ 1.570796326794896619231321691639751442098584699687552910487f, 1.10714871f }
 	};
-
-	delta_angle = 1.570796326794896619231321691639751442098584699687552910487f;
 
 	InitialTransform initial_transform {vec3(0.0f, 0.0f, 0.0f), vec3(-1.0, 1.0, 1.0), vec3(1.0f, 1.0f, 1.0f)};
 
@@ -213,10 +204,10 @@ void animateLights(int time)
 		float z = lights.radius[i] * sin(lights.angle[i]);
 
 		lights.lightPositions[i].x = x;
-		lights.lightPositions[0].z = z;
+		lights.lightPositions[i].z = z;
 
 		int steps_in_a_second = ONE_SECOND_IN_MILLISECOND / time;
-		float angle_per_second = 2 * PI / lights.radians_per_second[i];
+		float angle_per_second = 2 * PI / lights.pi_cuts_per_second[i];
 		lights.angle[i] += angle_per_second / steps_in_a_second;
 	}
 	glutPostRedisplay();

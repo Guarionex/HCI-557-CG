@@ -6,7 +6,7 @@ struct Lights
 {
 	std::vector<glm::vec3> lightPositions;
 	std::vector <glm::vec3> lightColors;
-	std::vector<int> radius;
-	std::vector<int> radians_per_second;
+	std::vector<float> radius;
+	std::vector<float> pi_cuts_per_second;
 	std::vector<float> angle;
 };
