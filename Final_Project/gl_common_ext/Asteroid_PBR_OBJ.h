@@ -29,6 +29,7 @@ namespace cs557 {
 		bool isFading;
 		int delta_angle;
 		void Setup_PBR_Shader(TextureMaps textures, Lights lights);
+		void setupLights(Lights light);
 		unsigned int loadTexture(char const * path);
 	};
 }

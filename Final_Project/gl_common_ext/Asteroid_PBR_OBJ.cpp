@@ -26,12 +26,7 @@ void Asteroid_PBR_OBJ::Draw(mat4 projectionMatrix, FPSCamera camera, Lights ligh
 {
 	pbr_shader.use();
 
-	for (unsigned int i = 0; i < sizeof(lights.lightPositions) / sizeof(lights.lightPositions[0]); ++i)
-	{
-		pbr_shader.setVec3("lightPositions[" + std::to_string(i) + "]", lights.lightPositions[i]);
-		pbr_shader.setVec3("lightColors[" + std::to_string(i) + "]", lights.lightColors[i]);
-	}
-
+	setupLights(lights);
 	
 	pbr_shader.setVec3("camPos", camera.GetPosition());
 	obj_model.draw(projectionMatrix, camera.GetViewMatrix(), model_matrix);
@@ -98,11 +93,7 @@ void Asteroid_PBR_OBJ::Setup_PBR_Shader(TextureMaps textures, Lights lights)
 	unsigned int specular = loadTexture("textures/asteroid/Specular.bmp");
 	unsigned int emission = loadTexture("textures/asteroid/Emission180FlipHor.bmp");
 
-	for (unsigned int i = 0; i < sizeof(lights.lightPositions) / sizeof(lights.lightPositions[0]); ++i)
-	{
-		pbr_shader.setVec3("lightPositions[" + std::to_string(i) + "]", lights.lightPositions[i]);
-		pbr_shader.setVec3("lightColors[" + std::to_string(i) + "]", lights.lightColors[i]);
-	}
+	setupLights(lights);
 
 	pbr_shader.setInt("emissionGlow", emissionGlow);
 
@@ -120,6 +111,15 @@ void Asteroid_PBR_OBJ::Setup_PBR_Shader(TextureMaps textures, Lights lights)
 	glBindTexture(GL_TEXTURE_2D, specular);
 	glActiveTexture(GL_TEXTURE7);
 	glBindTexture(GL_TEXTURE_2D, emission);
+}
+
+void Asteroid_PBR_OBJ::setupLights(Lights lights)
+{
+	for (unsigned int i = 0; i < lights.lightPositions.size(); ++i)
+	{
+		pbr_shader.setVec3("lightPositions[" + std::to_string(i) + "]", lights.lightPositions[i]);
+		pbr_shader.setVec3("lightColors[" + std::to_string(i) + "]", lights.lightColors[i]);
+	}
 }
 
 unsigned int Asteroid_PBR_OBJ::loadTexture(char const * path)
