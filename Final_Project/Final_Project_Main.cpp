@@ -1,30 +1,13 @@
-// stl include
-#include <vector>
-
-// GLEW include
-#include <GL/glew.h>
-
-// GLM include files
-#define GLM_FORCE_INLINE
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-// local
 #define GLM_ENABLE_EXPERIMENTAL
 #include "OpenGLDefaults.h"
-#include "ShaderProgram.h"
-#include "Texture2D.h"
+#include <vector>
 #include "InitialTransform.h"
 #include "ShaderFiles.h"
-
-// Geometry
 #include <GL/glut.h>
 #include "FPSCamera.h"
 #include "SkyBox.h"
 #include "Asteroid_PBR_OBJ.h"
 
-using namespace std;
 using namespace cs557;
 
 mat4 projectionMatrix;
