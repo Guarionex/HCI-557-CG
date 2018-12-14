@@ -1,12 +1,11 @@
 ﻿#pragma once
 #include <glm/detail/type_vec3.hpp>
-#include <vector>
 
 struct Lights
 {
-	std::vector<glm::vec3> lightPositions;
-	std::vector <glm::vec3> lightColors;
-	std::vector<float> radius;
-	std::vector<float> pi_cuts_per_second;
-	std::vector<float> angle;
+	glm::vec3 lightPositions;
+	glm::vec3 lightColors;
+	float radius;
+	float pi_cuts_per_second;
+	float angle;
 };
