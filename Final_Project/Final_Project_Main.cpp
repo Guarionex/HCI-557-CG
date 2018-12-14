@@ -101,7 +101,10 @@ void Init()
 		{
 			vec3(75.0f, 75.0f, 75.0f)
 			//vec3(25.0f, 0.0f, 0.0f)
-		}
+		},
+		{ 10 },
+		{ 8 },
+		{ 1.570796326794896619231321691639751442098584699687552910487f }
 	};
 
 	delta_angle = 1.570796326794896619231321691639751442098584699687552910487f;
@@ -201,24 +204,26 @@ void animateAsteroid(int value)
 	glutTimerFunc(value, animateAsteroid, value);
 }
 
-void animateLights(int radian_steps)
+void animateLights(int time)
 {
 
-	float x = 10 * cos(delta_angle);
-	float z = 10 * sin(delta_angle);
+	//for (unsigned int i = 0; i < sizeof(lights.lightPositions) / sizeof(lights.lightPositions[0]); ++i)
+	{
+		float x = lights.radius[0] * cos(lights.angle[0]);
+		float z = lights.radius[0] * sin(lights.angle[0]);
 
-	cout << "Light 1: (" << lights.lightPositions[0].x << ", " << lights.lightPositions[0].y << ", " << lights.lightPositions[0].z << ")";
-	cout << "	|	Degrees: " << delta_angle << "\n";
+		cout << "Light 1: (" << lights.lightPositions[0].x << ", " << lights.lightPositions[0].y << ", " << lights.lightPositions[0].z << ")";
+		cout << "	|	Degrees: " << delta_angle << "\n";
 
-	int steps_in_a_second = ONE_SECOND_IN_MILLISECOND / 100;
-	float target_angle_at_full_second = 2 * PI / radian_steps;
-	delta_angle += target_angle_at_full_second / steps_in_a_second;
+		lights.lightPositions[0].x = x;
+		lights.lightPositions[0].z = z;
 
-	lights.lightPositions[0].x = x;
-	lights.lightPositions[0].z = z;
-
+		int steps_in_a_second = ONE_SECOND_IN_MILLISECOND / time;
+		float target_angle_at_full_second = 2 * PI / lights.radians_per_second[0];
+		lights.angle[0] += target_angle_at_full_second / steps_in_a_second;
+	}
 	glutPostRedisplay();
-	glutTimerFunc(100, animateLights, radian_steps);
+	glutTimerFunc(time, animateLights, time);
 }
 
 int main(int argc, char** argv)
@@ -237,7 +242,7 @@ int main(int argc, char** argv)
 	glutMotionFunc(mouse_motion);
 	glutTimerFunc(100, animateEmissionGlow, 100);
 	glutTimerFunc(100, animateAsteroid, 1);
-	glutTimerFunc(100, animateLights, 8);
+	glutTimerFunc(100, animateLights, 100);
 	glutMainLoop();
 	return 1;
 }
