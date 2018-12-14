@@ -16,14 +16,23 @@ Asteroid_PBR_OBJ::Asteroid_PBR_OBJ(std::string obj_path, TextureMaps textures, L
 	model_matrix = translate(mat4(1.0f), original_transform.position);
 	model_matrix = scale(model_matrix, original_transform.scale);
 	isFading = false;
+	delta_angle = 0.0f;
 	Setup_PBR_Shader(textures, lights);
 	obj_model.create(obj_path, pbr_shader.ID);
 	obj_model.setCubeMapTexture(textures.IrradianceTexture);
 }
 
-void Asteroid_PBR_OBJ::Draw(mat4 projectionMatrix, FPSCamera camera)
+void Asteroid_PBR_OBJ::Draw(mat4 projectionMatrix, FPSCamera camera, Lights lights)
 {
 	pbr_shader.use();
+
+	for (unsigned int i = 0; i < sizeof(lights.lightPositions) / sizeof(lights.lightPositions[0]); ++i)
+	{
+		pbr_shader.setVec3("lightPositions[" + std::to_string(i) + "]", lights.lightPositions[i]);
+		pbr_shader.setVec3("lightColors[" + std::to_string(i) + "]", lights.lightColors[i]);
+	}
+
+	
 	pbr_shader.setVec3("camPos", camera.GetPosition());
 	obj_model.draw(projectionMatrix, camera.GetViewMatrix(), model_matrix);
 }

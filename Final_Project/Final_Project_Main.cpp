@@ -56,6 +56,11 @@ Asteroid_PBR_OBJ asteroid3;
 Asteroid_PBR_OBJ asteroid4;
 Asteroid_PBR_OBJ asteroid5;
 
+Lights lights;
+float delta_angle;
+float const PI = 3.14159f;
+int const ONE_SECOND_IN_MILLISECOND = 1000;
+
 void Init()
 {
 	initGlew();
@@ -87,17 +92,19 @@ void Init()
 		cubeMapTexture
 	};
 
-	Lights lights
+	lights = Lights
 	{
 		{
-			vec3(0.0f, 0.0f, 10.0f),
-			vec3(2.0f, 0.0f, 4.0f)
+			vec3(0.0f, 0.0f, 10.0f)
+			//vec3(2.0f, 0.0f, 4.0f)
 		},
 		{
-			vec3(75.0f, 75.0f, 75.0f),
-			vec3(25.0f, 0.0f, 0.0f)
+			vec3(75.0f, 75.0f, 75.0f)
+			//vec3(25.0f, 0.0f, 0.0f)
 		}
 	};
+
+	delta_angle = 1.570796326794896619231321691639751442098584699687552910487f;
 
 	InitialTransform initial_transform {vec3(0.0f, 0.0f, 0.0f), vec3(-1.0, 1.0, 1.0), vec3(1.0f, 1.0f, 1.0f)};
 
@@ -128,11 +135,11 @@ void Draw()
 
 	mat4 rotated_view = camera.GetViewMatrix();
 
-	asteroid.Draw(projectionMatrix, camera);
-	asteroid2.Draw(projectionMatrix, camera);
-	asteroid3.Draw(projectionMatrix, camera);
-	asteroid4.Draw(projectionMatrix, camera);
-	asteroid5.Draw(projectionMatrix, camera);
+	asteroid.Draw(projectionMatrix, camera, lights);
+	asteroid2.Draw(projectionMatrix, camera, lights);
+	asteroid3.Draw(projectionMatrix, camera, lights);
+	asteroid4.Draw(projectionMatrix, camera, lights);
+	asteroid5.Draw(projectionMatrix, camera, lights);
 	
 	skyBox.Draw(projectionMatrix, rotated_view);
 
@@ -194,6 +201,26 @@ void animateAsteroid(int value)
 	glutTimerFunc(value, animateAsteroid, value);
 }
 
+void animateLights(int radian_steps)
+{
+
+	float x = 10 * cos(delta_angle);
+	float z = 10 * sin(delta_angle);
+
+	cout << "Light 1: (" << lights.lightPositions[0].x << ", " << lights.lightPositions[0].y << ", " << lights.lightPositions[0].z << ")";
+	cout << "	|	Degrees: " << delta_angle << "\n";
+
+	int steps_in_a_second = ONE_SECOND_IN_MILLISECOND / 100;
+	float target_angle_at_full_second = 2 * PI / radian_steps;
+	delta_angle += target_angle_at_full_second / steps_in_a_second;
+
+	lights.lightPositions[0].x = x;
+	lights.lightPositions[0].z = z;
+
+	glutPostRedisplay();
+	glutTimerFunc(100, animateLights, radian_steps);
+}
+
 int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
@@ -210,6 +237,7 @@ int main(int argc, char** argv)
 	glutMotionFunc(mouse_motion);
 	glutTimerFunc(100, animateEmissionGlow, 100);
 	glutTimerFunc(100, animateAsteroid, 1);
+	glutTimerFunc(100, animateLights, 8);
 	glutMainLoop();
 	return 1;
 }
