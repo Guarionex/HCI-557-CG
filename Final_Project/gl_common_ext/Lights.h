@@ -3,6 +3,9 @@
 
 struct Lights
 {
-	glm::vec3 lightPositions[4];
-	glm::vec3 lightColors[4];
+	glm::vec3 lightPositions;
+	glm::vec3 lightColors;
+	float radius;
+	float pi_cuts_per_second;
+	float angle;
 };

@@ -22,8 +22,8 @@ void FPSCamera::UpdateView()
 	mat4 matPitch = mat4(1.0f);
 	mat4 matYaw = mat4(1.0f);
 
-	matPitch = glm::rotate(matPitch, _pitch, vec3(1.0f, 0.0f, 0.0f));
-	matYaw = glm::rotate(matYaw, _yaw, vec3(0.0f, 1.0f, 0.0f));
+	matPitch = rotate(matPitch, _pitch, vec3(1.0f, 0.0f, 0.0f));
+	matYaw = rotate(matYaw, _yaw, vec3(0.0f, 1.0f, 0.0f));
 
 	mat4 rotation = matPitch * matYaw;
 
@@ -61,7 +61,7 @@ void FPSCamera::KeyPressed(bool* keyStates)
 		dx = 2;
 	}
 
-	mat4 mat = GetViewMatrix();
+	mat4 mat = viewMatrix;
 	
 	vec3 forward(mat[0][2], mat[1][2], mat[2][2]);
 	vec3 strafe(mat[0][0], mat[1][0], mat[2][0]);
@@ -102,7 +102,7 @@ void FPSCamera::MouseMove(int x, int y, int width, int height)
 
 		mousePosition = vec2(x, y);
 
-		mat4 mat = GetViewMatrix();
+		mat4 mat = viewMatrix;
 
 		vec3 strafe(mat[0][0], mat[1][0], mat[2][0]);
 		vec3 vert(mat[0][1], mat[1][1], mat[2][1]);
