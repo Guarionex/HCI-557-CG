@@ -1,7 +1,4 @@
-
 // stl include
-#include <iostream>
-#include <string>
 #include <vector>
 
 // GLEW include
@@ -12,29 +9,20 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <GLFW/glfw3.h>
 
 // local
 #define GLM_ENABLE_EXPERIMENTAL
-#include "Window.h"
 #include "OpenGLDefaults.h"
-#include "VertexBuffers.h"
 #include "ShaderProgram.h"
 #include "Texture2D.h"
-#include "ModelOBJ.h"
-
-
-// Geometry
-#include "ModelCoordinateSystem.h"
-#include "ModelPlane.h"
-#include <GL/glut.h>
-#include "FPSCamera.h"
-#include "Skybox.h"
-#include "Asteroid_PBR_OBJ.h"
 #include "InitialTransform.h"
 #include "ShaderFiles.h"
+
+// Geometry
+#include <GL/glut.h>
+#include "FPSCamera.h"
+#include "SkyBox.h"
+#include "Asteroid_PBR_OBJ.h"
 
 using namespace std;
 using namespace cs557;
