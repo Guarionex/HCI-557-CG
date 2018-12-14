@@ -207,20 +207,17 @@ void animateAsteroid(int value)
 void animateLights(int time)
 {
 
-	//for (unsigned int i = 0; i < sizeof(lights.lightPositions) / sizeof(lights.lightPositions[0]); ++i)
+	for (unsigned int i = 0; i < lights.lightPositions.size(); ++i)
 	{
-		float x = lights.radius[0] * cos(lights.angle[0]);
-		float z = lights.radius[0] * sin(lights.angle[0]);
+		float x = lights.radius[i] * cos(lights.angle[i]);
+		float z = lights.radius[i] * sin(lights.angle[i]);
 
-		cout << "Light 1: (" << lights.lightPositions[0].x << ", " << lights.lightPositions[0].y << ", " << lights.lightPositions[0].z << ")";
-		cout << "	|	Degrees: " << delta_angle << "\n";
-
-		lights.lightPositions[0].x = x;
+		lights.lightPositions[i].x = x;
 		lights.lightPositions[0].z = z;
 
 		int steps_in_a_second = ONE_SECOND_IN_MILLISECOND / time;
-		float target_angle_at_full_second = 2 * PI / lights.radians_per_second[0];
-		lights.angle[0] += target_angle_at_full_second / steps_in_a_second;
+		float angle_per_second = 2 * PI / lights.radians_per_second[i];
+		lights.angle[i] += angle_per_second / steps_in_a_second;
 	}
 	glutPostRedisplay();
 	glutTimerFunc(time, animateLights, time);
