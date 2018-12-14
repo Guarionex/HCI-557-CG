@@ -44,16 +44,15 @@ mat4 viewMatrix;
 
 int const WIDTH = 1280;
 int const HEIGHT = 1024;
+float const PI = 3.14159f;
+int const ONE_SECOND_IN_MILLISECOND = 1000;
 bool* keyStates;
 
 FPSCamera camera;
 SkyBox skyBox;
-
 vector<Asteroid_PBR_OBJ> asteroids;
 
 vector<Lights> lights;
-float const PI = 3.14159f;
-int const ONE_SECOND_IN_MILLISECOND = 1000;
 vector<int> asteroid_animation_speed;
 
 void Init()
@@ -62,7 +61,7 @@ void Init()
 	projectionMatrix = perspective(1.57f, (float)800 / (float)600, 0.1f, 200.f);
 
 	keyStates = new bool[256];
-	for (int i = 0; i < 256; i++)
+	for (unsigned int i = 0; i < 256; ++i)
 	{
 		keyStates[i] = false;
 	}
@@ -106,14 +105,10 @@ void Init()
 
 	ShaderFiles pbr_shader {"shaders/PBR.vs", "shaders/PBR.fs"};
 
-	asteroids =
+	for(unsigned int i = 0; i < asteroid_init_transform.size(); ++i)
 	{
-		Asteroid_PBR_OBJ("models/asteroid/A7.obj", textures, lights, pbr_shader, asteroid_init_transform[0]),
-		Asteroid_PBR_OBJ("models/asteroid/A7.obj", textures, lights, pbr_shader, asteroid_init_transform[1]),
-		Asteroid_PBR_OBJ("models/asteroid/A7.obj", textures, lights, pbr_shader, asteroid_init_transform[2]),
-		Asteroid_PBR_OBJ("models/asteroid/A7.obj", textures, lights, pbr_shader, asteroid_init_transform[3]),
-		Asteroid_PBR_OBJ("models/asteroid/A7.obj", textures, lights, pbr_shader, asteroid_init_transform[4])
-	};
+		asteroids.push_back(Asteroid_PBR_OBJ("models/asteroid/A7.obj", textures, lights, pbr_shader, asteroid_init_transform[i]));
+	}
 }
 
 void Draw()
@@ -204,6 +199,7 @@ void animateLights(int time)
 		float angle_per_second = 2 * PI / lights[i].pi_cuts_per_second;
 		lights[i].angle += angle_per_second / steps_in_a_second;
 	}
+
 	glutPostRedisplay();
 	glutTimerFunc(time, animateLights, time);
 }
