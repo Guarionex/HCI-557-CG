@@ -2,10 +2,11 @@
 #include <iostream>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "ShaderProgram.h"
 
 using namespace cs557;
 
-SkyBox::SkyBox(string left, string right, string up, string down, string front, string back, int shader_program)
+SkyBox::SkyBox(string left, string right, string up, string down, string front, string back, ShaderFiles skybox_shader_files)
 {
 	vector<string> faces
 	{
@@ -16,7 +17,7 @@ SkyBox::SkyBox(string left, string right, string up, string down, string front, 
 		front,
 		back
 	};
-	skyBox_program = shader_program;
+	skyBox_program = LoadAndCreateShaderProgram(skybox_shader_files.vertex_shader, skybox_shader_files.fragment_shader);
 	cubemapTexture = loadCubemap(faces);
 	createCube();
 }

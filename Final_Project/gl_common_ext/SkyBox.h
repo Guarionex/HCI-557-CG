@@ -3,6 +3,7 @@
 #include <vector>
 #include <glm/gtc/matrix_transform.hpp>
 #include <GL/glew.h>
+#include "ShaderFiles.h"
 
 using namespace glm;
 using namespace std;
@@ -12,7 +13,7 @@ namespace cs557
 	{
 	public:
 		SkyBox();
-		SkyBox(string left, string right, string up, string down, string front, string back, int shader_program);
+		SkyBox(string left, string right, string up, string down, string front, string back, ShaderFiles skybox_shader_files);
 		void Draw(glm::mat4 projectionMatrix, glm::mat4 viewMatrix);
 		unsigned int GetCubeMap() const;
 
